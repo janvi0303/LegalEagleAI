@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>LegalEagle</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:200,300,400,700,900|Oswald:400,700"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/icomoon/style.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.theme.default.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mediaelementplayer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/flaticon/font/flaticon.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fl-bigmug-line.css') }}">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/aos.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    
+  </head>
+  <body>
+           <!-- Bootstrap Modal -->
+           <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+               <div class="modal-content">
+                  <div class="modal-header">
+                        <h5 class="modal-title" id="messageModalLabel">Message</h5>
+                  </div>
+                  <div class="modal-body">
+                        <p id="modalMessage"></p>
+                  </div>
+               </div>
+            </div>
+         </div>
+          <!-- Bootstrap JS & CSS -->
+         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>   
+
+    <div class="site-navbar mt-4">
+        <div class="row d-flex justify-content-between align-items-center" style="margin-left: 8% ; margin-right: 8%">
+            <div class="col-auto">
+                <h1 class="mb-0">
+                    <a href="{{ url_for('index') }}" class="h2 mb-0" style="color: black;">
+                        <strong>LegalEagle AI<span style="color: #ce902b;" >.</span></strong>
+                    </a>
+                </h1>
+            </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="sidebar">
+            <input type="file" id="profilePicInput" accept="image/*" hidden>
+            <img id="profilePic" class="profile-pic" src="static/images/default-avatar.png" alt="Profile Picture">
+            <h2 id="lawyerName">Loading...</h2>
+            <p id="lawyerEmail">Loading...</p>
+            <p>Bar Council ID: <span id="barCouncilID">Loading...</span></p>
+    
+            <div class="sidebar-menu">
+                <div class="menu-item" onclick="openEditProfile()">
+                    <span>Edit Profile</span><span class="icon">✏️</span>
+                </div>
+                <div class="menu-item" id="logout" >
+                    <span>Logout</span><span class="icon">ᯓ🏃🏻‍♀️‍➡️</span>
+                </div>
+            </div>
+            <!-- In the sidebar menu -->
+            
+            <!--<div class="menu-item" onclick="location.href='/lawyer'">
+                <span>My Appointments</span><span class="icon">📅</span>
+            </div>-->  
+            
+            <button class="btn btn-primary" style="background-color: rgb(0, 41, 107);" onclick="location.href='{{ url_for('lawyer_appointment_detail') }}'">
+                Case Tracking
+            </button>           
+        </div>
+    
+        <div class="main-content">
+            <div class="content-section">
+                <h3>Personal Information</h3>
+                <div class="content-grid">
+                    <div class="info-card">
+                        <strong>Contact No.:</strong> 
+                        <span id="displayContact">Not Provided</span>
+                    </div>
+                    <div class="info-card">
+                        <strong>Address:</strong> 
+                        <span id="displayAddress">Not Provided</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-section">
+                <h3>Information on Firm</h3>
+                <div class="content-grid">
+                <div class="info-card"><strong>Firm Name:</strong> <span id="displayFirmName">Not Provided</span></div>
+                <div class="info-card"><strong>Firm Size:</strong> <span id="displayFirmSize">Not Provided</span></div>
+                <div class="info-card"><strong>Affiliation:</strong> <span id="displayAffiliation">Not Provided</span></div>
+                </div>
+            <div class="content-section">
+            <h3>Professional Information</h3>
+            <div class="content-grid">
+            <div class="info-card"><strong>Practice Area:</strong> <span id="displayPracticeArea">Not Provided</span></div>
+            <div class="info-card"><strong>Designation:</strong> <span id="displayDesignation">Not Provided</span></div>
+            <div class="info-card"><strong>Years of Experience:</strong> <span id="displayExperience">Not Provided</span></div>
+            <div class="info-card"><strong>Successful Cases:</strong> <span id="displayCases">Not Provided</span></div>
+            <div class="info-card"><strong>Nominal Fees:</strong> <span id="displayFees">Not Provided</span></div>
+        </div>
+    </div>
+    
+    <!-- Edit Profile Modal -->
+    <div id="editProfileModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditProfile()">&times;</span>
+            <form id="editProfileForm">
+                <h3>Personal Information</h3>
+                <label>Name:</label>
+                <input type="text" id="lawyername" required>
+                <label>Email:</label>
+                <input type="email" id="lawyerEmail" disabled>
+                <label>Contact No.:</label>
+                <input type="text" id="contact">
+                <label for="address">Location:</label>
+                    <select id="address">
+                    <option value="">-- Select Location --</option>
+                    <option value="Ahmedabad">Ahmedabad</option>
+                    <option value="Bangalore">Bangalore</option>
+                    <option value="Chennai">Chennai</option>
+                    <option value="Delhi">Delhi</option>
+                    <option value="Hyderabad">Hyderabad</option>
+                    <option value="Jaipur">Jaipur</option>
+                    <option value="Kolkata">Kolkata</option>
+                    <option value="Lucknow">Lucknow</option>
+                    <option value="Mumbai">Mumbai</option>
+                    <option value="Pune">Pune</option>
+                    </select>
+    
+                <h3>Information on Firm</h3>
+                <label>Firm Name:</label>
+                <input type="text" id="firmName">
+                <label>Firm Size:</label>
+                <input type="text" id="firmSize">
+                <label for="affiliation">Affiliation:</label>
+                    <select id="affiliation">
+                    <option value="">-- Select Affiliation --</option>
+                    <option value="District Court">District Court</option>
+                    <option value="Supreme Court of India">Supreme Court of India</option>
+                    <option value="High Court">High Court</option>
+                    <option value="Bar Council of India">Bar Council of India</option>
+                    </select>
+    
+                <h3>Professional Information</h3>
+                <label for="practiceArea">Practice Area:</label>
+                    <select id="practiceArea">
+                    <option value="">-- Select Practice Area --</option>
+                    <option value="Banking & Finance Law">Banking & Finance Law</option>
+                    <option value="Civil Litigation">Civil Litigation</option>
+                    <option value="Constitutional Law">Constitutional Law</option>
+                    <option value="Corporate Law">Corporate Law</option>
+                    <option value="Criminal Law">Criminal Law</option>
+                    <option value="Cyber Law">Cyber Law</option>
+                    <option value="Employment & Labor Law">Employment & Labor Law</option>
+                    <option value="Environmental Law">Environmental Law</option>
+                    <option value="Family Law">Family Law</option>
+                    <option value="Human Rights Law">Human Rights Law</option>
+                    <option value="Immigration Law">Immigration Law</option>
+                    <option value="Intellectual Property (IP) Law">Intellectual Property (IP) Law</option>
+                    <option value="Personal Injury Law">Personal Injury Law</option>
+                    <option value="Real Estate Law">Real Estate Law</option>
+                    <option value="Tax Law">Tax Law</option>
+                    </select>
+
+                <label for="designation">Designation:</label>
+                    <select id="designation">
+                      <option value="Senior Associate">Senior Associate</option>
+                      <option value="Legal Advisor">Legal Advisor</option>
+                      <option value="Senior Advocate">Senior Advocate</option>
+                      <option value="Independent Legal Consultant">Independent Legal Consultant</option>
+                      <option value="Solicitor">Solicitor</option>
+                      <option value="Advocate">Advocate</option>
+                      <option value="Counsel">Counsel</option>
+                      <option value="Legal Aid Lawyer">Legal Aid Lawyer</option>
+                      <option value="Managing Partner">Managing Partner</option>
+                      <option value="Managing Associate">Managing Associate</option>
+                      <option value="Of Counsel">Of Counsel</option>
+                      <option value="Non-Equity Partner">Non-Equity Partner</option>
+                      <option value="Principal Associate">Principal Associate</option>
+                      <option value="In-House Counsel">In-House Counsel</option>
+                      <option value="Government Counsel">Government Counsel</option>
+                      <option value="Junior Associate / Associate">Junior Associate / Associate</option>
+                    </select>
+                <label>Years of Experience:</label>
+                <input type="number" id="experience">
+                <label>Successful Cases:</label>
+                <input type="number" id="cases">
+                <label>Nominal Fees:</label>
+                <input type="text" id="fees">
+                
+                <button type="submit">Save Changes</button>
+            </form>
+        </div>
+    </div>
+    
+    <script type="module" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+    <script>
+        // After fetching or setting the lawyer's name dynamically
+        const lawyerName = document.getElementById("lawyerName").innerText;
+        if (lawyerName && lawyerName !== "Loading...") {
+            localStorage.setItem("lawyerName", lawyerName);
+        }
+      const indexUrl = "{{ url_for('index') }}";
+        window.firebaseConfig = {
+            apiKey: "{{ firebase_api_key }}",
+            authDomain: "{{ firebase_auth_domain }}",
+            projectId: "{{ firebase_project_id }}",
+            storageBucket: "{{ firebase_storage_bucket }}",
+            messagingSenderId: "{{ firebase_messaging_sender_id }}",
+            appId: "{{ firebase_app_id }}"
+        };
+
+    </script>
+    <script type="module" src="{{ url_for('static', filename='js/firebase_Auth.js') }}"></script>   
+    </body>
+</html>

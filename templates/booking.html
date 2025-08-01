@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment</title>
+    <link rel="stylesheet" href="static/booking.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body>
+    <div class="site-navbar mt-4">
+        <div class="row d-flex justify-content-between align-items-center" style="margin-left: 8% ; margin-right: 8%">
+            <div class="col-auto">
+                <h1 class="mb-0">
+                    <a href="{{ url_for('afterlogin') }}" class="h2 mb-0" style="color: black;">
+                        <b>LegalEagle AI<span style="color: #ce902b;">.</span></b>
+                    </a>
+                </h1>
+            </div>
+        </div>
+    </div>
+    <div class="booking-container">
+        <h2><b>Book an Appointment</b></h2>
+        <br>
+        <!-- Form to select a date and other details -->
+        <form id="appointmentForm">
+            <label for="appointmentDate">Select a Date:</label>
+            <input type="text" id="appointmentDate" class="date-picker" placeholder="Select a date" required>
+
+            <!-- Additional fields that show after date selection -->
+            <label for="clientName">Name:</label>
+            <input type="text" id="clientName" placeholder="Enter your name" required>
+
+            <label for="clientEmail">Email:</label>
+            <input type="email" id="clientEmail" placeholder="Enter your email" required>
+
+            <label for="lawyerName">Select a Lawyer:</label>
+            <input type="text" id="lawyerName" name="lawyerName" value="{{ lawyer_name }}" readonly>
+            <!-- Add this hidden input field in the form -->
+            <input type="hidden" id="barcouncilid" name="barcouncilid" value="{{ barcouncil_id }}">
+
+            <label for="appointmentTime">Select a Time:</label>
+            <div class="time-slot-container" id="timeSlotContainer"></div>
+            <input type="hidden" id="appointmentTime" required> <!-- Stores selected time -->
+
+            <label for="caseDetails">Case Details:</label>
+            <textarea id="caseDetails" placeholder="Enter relevant information about your case" required></textarea>
+
+            <button type="submit">Confirm Appointment</button>
+        </form>
+    </div>
+
+    <!-- Flatpickr JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+   
+    <script>
+        // Initialize Flatpickr on the appointmentDate input
+        flatpickr("#appointmentDate", {
+            minDate: "today",  // Prevents past dates
+        });
+
+        // Debug: Log the URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        console.log("URL Parameters:", Object.fromEntries(urlParams.entries()));
+
+        // Get and log the barcouncilid
+        const barcouncilId = urlParams.get('barcouncilid');
+        console.log("Received Bar Council ID from URL:", barcouncilId);
+
+        // Set the hidden field value and verify
+        document.getElementById('barcouncilid').value = barcouncilId;
+        console.log("Set hidden field value to:", document.getElementById('barcouncilid').value);
+
+        const lawyerNameFromInput = document.getElementById('lawyerName').value;
+        if (lawyerNameFromInput) {
+            localStorage.setItem('lawyerName', lawyerNameFromInput);
+        }
+
+        const availableTimeSlots = ["09:00 AM", "9:30 AM", "11:00 AM", "2:00 PM", "3:30 PM", "5:00 PM"];
+        const timeSlotContainer = document.getElementById("timeSlotContainer");
+        const appointmentTimeInput = document.getElementById("appointmentTime");
+
+        // Create time slot buttons
+        availableTimeSlots.forEach(time => {
+            const btn = document.createElement("div");
+            btn.classList.add("time-slot");
+            btn.textContent = time;
+            btn.dataset.value = convertTo24Hour(time);
+           
+            btn.addEventListener("click", () => {
+                // Remove selected class from all buttons
+                document.querySelectorAll(".time-slot").forEach(slot => slot.classList.remove("selected"));
+               
+                // Mark the clicked button as selected
+                btn.classList.add("selected");
+               
+                // Store selected time in hidden input
+                appointmentTimeInput.value = btn.dataset.value;
+            });
+
+            timeSlotContainer.appendChild(btn);
+        });
+
+
+        // Populate the dropdown with time slots
+        const timeDropdown = document.getElementById('appointmentTime');
+        availableTimeSlots.forEach(time => {
+            const option = document.createElement('option');
+            option.value = convertTo24Hour(time); // Ensure correct format
+            option.textContent = time;
+            timeDropdown.appendChild(option);
+        });
+
+        // Function to convert 12-hour time to 24-hour format
+        function convertTo24Hour(time) {
+            let [hours, minutes] = time.split(/[: ]/);
+            if (time.includes("PM") && hours !== "12") {
+                hours = String(Number(hours) + 12);
+            } else if (time.includes("AM") && hours === "12") {
+                hours = "00";
+            }
+            return `${hours}:${minutes}`;
+        }
+
+        // Function to show toast notification
+        function showToast(message, type = "success") {
+            const toast = document.createElement("div");
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+           
+            document.body.appendChild(toast);
+           
+            setTimeout(() => {
+                toast.classList.add("show");
+            }, 100); // Small delay for animation
+           
+            setTimeout(() => {
+                toast.classList.remove("show");
+                setTimeout(() => toast.remove(), 500);
+            }, 3000); // Auto-hide after 3 seconds
+        }
+
+        // Handle form submission
+        document.getElementById('appointmentForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent page refresh
+        
+            const appointmentData = {
+                appointmentDate: document.getElementById('appointmentDate').value,
+                clientName: document.getElementById('clientName').value,
+                clientEmail: document.getElementById('clientEmail').value,
+                lawyerName: document.getElementById('lawyerName').value,
+                appointmentTime: document.getElementById('appointmentTime').value,
+                caseDetails: document.getElementById('caseDetails').value,
+                barcouncilid: document.getElementById('barcouncilid').value // Add this line
+            };
+        
+            try {
+                const response = await fetch('/book_appointment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(appointmentData)
+                });
+        
+                if (response.ok) {
+                    showToast("✅ Appointment booked successfully! Please check your email for confirmation", "success");
+                    document.getElementById('appointmentForm').reset();
+                    setTimeout(() => {
+                        window.location.href = "/afterlogin";
+                    }, 2000);
+                } else {
+                    const errorData = await response.json();
+                    showToast("❌ Error: " + errorData.message, "error");
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast("❌ Error booking appointment. Please try again.", "error");
+            }
+        });
+
+    </script>
+</body>
+</html>
