@@ -571,5 +571,15 @@ def book_appointment():
             cur.close()
         if 'conn' in locals():
             conn.close()
+            
+@app.route('/<path:path>')
+def serve_static(path):
+    if path.startswith('static/'):
+        return send_from_directory('static', path[7:])
+    elif path.startswith('templates/'):
+        return send_from_directory('templates', path[10:])
+    return send_from_directory('templates', 'index.html')
+           
 if __name__ == '__main__':
     app.run(debug=True)
+    
