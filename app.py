@@ -434,7 +434,7 @@ def recommend_lawyers(query, min_price=None, max_price=None, sort_order=None, lo
     return recommendations
 
 
-# Database configuration (replace karo with ur actual database credentials)
+# Database configuration 
 DB_HOST = 'localhost'
 DB_NAME = 'mydatabase'
 DB_USER = 'postgres'
