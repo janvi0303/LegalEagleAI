@@ -2,7 +2,8 @@ services:
   - type: web
     name: legaleagleai
     runtime: python
-    region: oregon  # or leave blank for auto selection
+    region: oregon  
+    plan: free
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn app:app"
     envVars:
