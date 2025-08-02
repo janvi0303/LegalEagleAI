@@ -1,6 +1,80 @@
+# render.yaml - Full Stack Deployment Configuration
 services:
+  # Main Web Service (Python/Flask)
   - type: web
-    name: legaleagle-backend
+    name: legaleagle-web
     runtime: python
-    buildCommand: pip install -r requirements.txt
+    python:
+      version: "3.12.6"  # Matches your Python version
+    buildCommand: |
+      pip install -r requirements.txt
+      python -c "import nltk; nltk.download('punkt'); nltk.download('stopwords')"
     startCommand: gunicorn app:app
+    envVars:
+      # Flask Configuration
+      - key: FLASK_ENV
+        value: production
+      - key: FLASK_APP
+        value: app.py
+      - key: SECRET_KEY
+        generateValue: true
+        
+      # Firebase Configuration
+      - key: FIREBASE_API_KEY
+        value: AIzaSyAnHmvZwVaGuNrHoujwSw5ArdGc64Vk4lM
+      - key: FIREBASE_AUTH_DOMAIN
+        value: legaleagle-auth.firebaseapp.com
+      - key: FIREBASE_PROJECT_ID
+        value: legaleagle-auth
+      - key: FIREBASE_STORAGE_BUCKET
+        value: legaleagle-auth.firebasestorage.app
+      - key: FIREBASE_MESSAGING_SENDER_ID
+        value: "174717013512"
+      - key: FIREBASE_APP_ID
+        value: "1:174717013512:web:0712b82ba626a953b20bbd"
+      - key: FIREBASE_DATABASE_URL
+        value: https://legaleagle-auth-default-rtdb.firebaseio.com/
+      
+      # Google AI Configuration
+      - key: GOOGLE_API_KEY
+        value: AIzaSyBx1TCsgCXFGXjQWgDN5-ePcLSrtvZI5UA
+      
+      # Email Configuration
+      - key: MAIL_USERNAME
+        value: pinkprincess3393@gmail.com
+      - key: MAIL_PASSWORD
+        value: ismw wozt vepg vnts
+      - key: MAIL_SERVER
+        value: smtp.gmail.com
+      - key: MAIL_PORT
+        value: "587"
+      - key: MAIL_USE_TLS
+        value: "true"
+      
+      # PostgreSQL Configuration (Render will provide this when you create the DB)
+      - key: DATABASE_URL
+        fromDatabase:
+          name: legaleagle-db
+          property: connectionString
+      
+    # Health Check Path
+    healthCheckPath: /healthcheck
+    plan: free  # Upgrade to starter ($7/mo) for always-on
+
+# PostgreSQL Database
+databases:
+  - name: legaleagle-db
+    databaseName: mydatabase
+    user: postgres
+    plan: free  # Free tier has 90-day data persistence
+    # Note: For production, use at least "starter" plan ($7/mo)
+
+# Scheduled Jobs (For Firebase sync)
+jobs:
+  - name: sync-firebase
+    envVars:
+      - key: FIREBASE_SERVICE_ACCOUNT
+        syncValue: true  # Upload your firebase_admin_config.json via Dashboard
+    schedule: "*/15 * * * *"  # Every 15 minutes
+    command: python sync_bookings_to_firebase.py
+    plan: free
