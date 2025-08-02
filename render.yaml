@@ -1,36 +1,6 @@
 services:
   - type: web
-    name: legaleagleai
+    name: legaleagle-backend
     runtime: python
-    region: oregon  # or leave blank for auto selection
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn app:app"
-    envVars:
-      - key: FIREBASE_API_KEY
-        value: AIzaSyAnHmvZwVaGuNrHoujwSw5ArdGc64Vk4lM
-      - key: FIREBASE_AUTH_DOMAIN
-        value: legaleagle-auth.firebaseapp.com
-      - key: FIREBASE_PROJECT_ID
-        value: legaleagle-auth
-      - key: FIREBASE_STORAGE_BUCKET
-        value: legaleagle-auth.firebasestorage.app
-      - key: FIREBASE_MESSAGING_SENDER_ID
-        value: 174717013512
-      - key: FIREBASE_APP_ID
-        value: 1:174717013512:web:0712b82ba626a953b20bbd
-      - key: FIREBASE_DB_URL
-        value: https://legaleagle-auth-default-rtdb.firebaseio.com/
-      - key: GOOGLE_API_KEY
-        value: AIzaSyBx1TCsgCXFGXjQWgDN5-ePcLSrtvZI5UA
-      - key: MAIL_USERNAME
-        value: pinkprincess3393@gmail.com
-      - key: MAIL_PASSWORD
-        value: ismw wozt vepg vnts
-      - key: DB_HOST
-        value: localhost
-      - key: DB_NAME
-        value: mydatabase
-      - key: DB_USER
-        value: postgres
-      - key: DB_PASSWORD
-        value: 123
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
