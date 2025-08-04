@@ -23,25 +23,133 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+.custom-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.custom-modal-overlay.show {
+  opacity: 1;
+  visibility: visible;
+}
+
+.custom-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 420px;
+  padding: 2rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  text-align: center;
+  animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.custom-modal-icon {
+  font-size: 2.8rem;
+  color: #ce902b;
+  margin-bottom: 1rem;
+}
+
+.custom-modal-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #1a2a3a;
+}
+
+.custom-modal-body {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 1.8rem;
+}
+
+.custom-modal-btn {
+  background: #1a2a3a;
+  color: white;
+  padding: 0.6rem 1.4rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.custom-modal-btn:hover {
+  background: #ce902b;
+  color: #1a2a3a;
+}
+</style>
   </head>
   <body>
-           <!-- Bootstrap Modal -->
-           <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-               <div class="modal-content">
-                  <div class="modal-header">
-                        <h5 class="modal-title" id="messageModalLabel">Message</h5>
-                  </div>
-                  <div class="modal-body">
-                        <p id="modalMessage"></p>
-                  </div>
-               </div>
-            </div>
-         </div>
-          <!-- Bootstrap JS & CSS -->
-         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>   
+<!-- Welcome Modal -->
+<div class="custom-modal-overlay" id="welcomeModal">
+  <div class="custom-modal">
+    <div class="custom-modal-header">
+      <div class="custom-modal-icon"><i class="fas fa-handshake"></i></div>
+      <h3 class="custom-modal-title">Welcome, Lawyer!</h3>
+    </div>
+    <div class="custom-modal-body">
+      <p>You’re successfully logged in to LegalEagle AI.</p>
+    </div>
+    <div class="custom-modal-footer">
+      <button class="custom-modal-btn" id="welcomeModalClose">Get Started</button>
+    </div>
+  </div>
+</div>
+
+<!-- Logout Modal -->
+<div class="custom-modal-overlay" id="logoutModal">
+  <div class="custom-modal">
+    <div class="custom-modal-header">
+      <div class="custom-modal-icon"><i class="fas fa-sign-out-alt"></i></div>
+      <h3 class="custom-modal-title">Logged Out</h3>
+    </div>
+    <div class="custom-modal-body">
+      <p>You have been successfully logged out.</p>
+    </div>
+    <div class="custom-modal-footer">
+      <button class="custom-modal-btn" id="logoutModalClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- Profile Update Modal -->
+<div class="custom-modal-overlay" id="profileUpdatedModal">
+  <div class="custom-modal">
+    <div class="custom-modal-header">
+      <div class="custom-modal-icon"><i class="fas fa-check-circle"></i></div>
+      <h3 class="custom-modal-title">Profile Updated</h3>
+    </div>
+    <div class="custom-modal-body">
+      <p>Your profile was successfully updated.</p>
+    </div>
+    <div class="custom-modal-footer">
+      <button class="custom-modal-btn" id="profileUpdatedModalClose">OK</button>
+    </div>
+  </div>
+</div>
 
     <div class="site-navbar mt-4">
         <div class="row d-flex justify-content-between align-items-center" style="margin-left: 8% ; margin-right: 8%">
@@ -207,7 +315,7 @@
             </form>
         </div>
     </div>
-    
+
     <script type="module" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
     <script>
         // After fetching or setting the lawyer's name dynamically
@@ -226,6 +334,44 @@
         };
 
     </script>
+<script>
+  // Welcome Modal (only once per session)
+  window.addEventListener("DOMContentLoaded", () => {
+    const welcomeModal = document.getElementById("welcomeModal");
+    const logoutModal = document.getElementById("logoutModal");
+    const profileUpdatedModal = document.getElementById("profileUpdatedModal");
+
+    // Show Welcome once per session
+    if (!sessionStorage.getItem("welcomeShown")) {
+      welcomeModal.classList.add("show");
+      sessionStorage.setItem("welcomeShown", "true");
+    }
+
+    document.getElementById("welcomeModalClose")?.addEventListener("click", () => {
+      welcomeModal.classList.remove("show");
+    });
+
+    document.getElementById("logoutModalClose")?.addEventListener("click", () => {
+      logoutModal.classList.remove("show");
+      window.location.href = "/";
+    });
+
+    document.getElementById("profileUpdatedModalClose")?.addEventListener("click", () => {
+      profileUpdatedModal.classList.remove("show");
+    });
+  });
+
+  // Replace alert in dashboard.js with this:
+  function showProfileUpdateSuccessModal() {
+    document.getElementById("profileUpdatedModal").classList.add("show");
+  }
+
+  function showLogoutModal() {
+    document.getElementById("logoutModal").classList.add("show");
+  }
+</script>
+
+
     <script type="module" src="{{ url_for('static', filename='js/firebase_Auth.js') }}"></script>   
     </body>
 </html>

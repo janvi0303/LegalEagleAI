@@ -205,8 +205,8 @@ editProfileForm.addEventListener("submit", function(event) {
             const profileRef = ref(database, `lawyers_profile/lawyer_profile/${encodedBarCouncilID}`);
             set(profileRef, profileData)
                 .then(() => {
-                    alert(`Profile updated! Total cases calculated as ${totalCases} (${successfulCases} successful)`);
                     closeEditProfile();
+                    document.getElementById("profileUpdatedModal")?.classList.add("show");
                 })
                 .catch(error => {
                     console.error("Error updating profile:", error);
@@ -263,16 +263,21 @@ profilePicInputElement.addEventListener("change", function(event) {
 });
 
 // Logout Functionality with proper redirection
-logoutButton.addEventListener("click", function() {
-    signOut(auth).then(() => {
-        // Redirect to the root route handled by Flask
-        window.location.href = "/";  // Changed from "/index.html" to "/"
-    }).catch((error) => {
-        console.error("Logout error:", error);
-        alert("Error during logout. Please try again.");
+logoutButton.addEventListener("click", function () {
+    document.getElementById("logoutModal")?.classList.add("show");
+    document.getElementById("logoutModalClose")?.addEventListener("click", function () {
+        signOut(auth).then(() => {
+            document.getElementById("logoutModal")?.classList.remove("show");
+            window.location.href = "/";
+        }).catch((error) => {
+            console.error("Logout error:", error);
+            alert("Error during logout. Please try again.");
+        });
     });
 });
 
+
+// Initialize the page with proper authentication handling
 // Initialize the page with proper authentication handling
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -286,4 +291,25 @@ onAuthStateChanged(auth, (user) => {
         // Redirect to home page if not authenticated
         window.location.href = "/";
     }
+});
+
+// ✅ Show welcome modal once per session
+document.addEventListener("DOMContentLoaded", function () {
+    const welcomeModal = document.getElementById("welcomeModal");
+    const closeBtn = document.getElementById("welcomeModalClose");
+
+    if (!sessionStorage.getItem("welcomeShown") && welcomeModal) {
+        welcomeModal.classList.add("show");
+        sessionStorage.setItem("welcomeShown", "true");
+    }
+
+    closeBtn?.addEventListener("click", () => {
+        welcomeModal.classList.remove("show");
+    });
+
+    // Profile updated modal close
+    const profileUpdatedClose = document.getElementById("profileUpdatedModalClose");
+    profileUpdatedClose?.addEventListener("click", () => {
+        document.getElementById("profileUpdatedModal")?.classList.remove("show");
+    });
 });

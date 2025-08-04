@@ -1,207 +1,374 @@
-@import url('https://fonts.googleapis.com/css?family=Montserrat:400,500,600,700|Poppins:400,500&display=swap');
-*{
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Open+Sans:wght@400;500;600&display=swap');
+
+:root {
+  --primary-dark: #0A1F3D;
+  --primary-light: #1A3A6A;
+  --accent-gold: #C9A66B;
+  --accent-light: #F0E6D2;
+  --text-light: #F8F9FA;
+  --text-dark: #2D3748;
+  --error-red: #E53E3E;
+  --success-green: #38A169;
+  --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+}
+
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  user-select: none;
 }
-.bg-img{
-  background: url('bg.jpg');
+
+body {
+  font-family: 'Open Sans', sans-serif;
+  background-color: #f8f9fa;
+  color: var(--text-dark);
+  line-height: 1.6;
+}
+
+/* Background with parchment texture */
+.bg-img {
+  position: relative;
   height: 100vh;
   background-size: cover;
   background-position: center;
+  overflow: hidden;
+  animation: fadeIn 1s ease-out;
 }
-.bg-img:after{
-  position: absolute;
+
+.bg-img:after {
   content: '';
+  position: absolute;
   top: 0;
   left: 0;
-  height: 100%;
   width: 100%;
-  background: rgba(0,0,0,0.7);
+  height: 100%;
+  background: linear-gradient(135deg, rgba(10, 31, 61, 0.9) 0%, rgba(26, 58, 106, 0.85) 100%);
+  z-index: 1;
 }
-.content{
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Main content container */
+.content {
   position: absolute;
   top: 50%;
   left: 50%;
-  z-index: 999;
+  transform: translate(-50%, -50%);
+  width: 420px;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+  overflow: hidden;
+  transition: var(--transition);
+  animation: slideUp 0.8s ease-out;
+}
+
+.content:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background: linear-gradient(90deg, var(--accent-gold), #B38B4F);
+}
+
+.content:hover {
+  transform: translate(-50%, -52%);
+  box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes slideUp {
+  from { transform: translate(-50%, -40%); opacity: 0; }
+  to { transform: translate(-50%, -50%); opacity: 1; }
+}
+
+/* Logo and Header Container */
+.logo-header-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  gap: 15px;
+}
+
+.logo i {
+  font-size: 2rem;
+  color: var(--accent-gold);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+}
+
+/* Header styling */
+.content header {
+  color: var(--primary-dark);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin-bottom: 0rem;
   text-align: center;
-  padding: 60px 32px;
-  width: 370px;
-  transform: translate(-50%,-50%);
-  background: rgba(255,255,255,0.04);
-  box-shadow: -1px 4px 28px 0px rgba(0,0,0,0.75);
-}
-.content header{
-  color: white;
-  font-size: 33px;
-  font-weight: 600;
-  margin: 0 0 30px 0;
-  font-family: 'Montserrat',sans-serif;
-}
-.field{
-  margin-top: 20px;
   position: relative;
-  border-radius: 5px;
-  height: 45px;
-  width: 100%;
-  display: flex;
-  background: rgba(255,255,255,0.94);
-}
-.field span{
-  color: #222;
-  width: 40px;
-  line-height: 45px;
-}
-.field input{
-  height: 100%;
-  width: 100%;
-  background: transparent;
-  border: none;
-  outline: none;
-  color: #222;
-  font-size: 16px;
-  font-family: 'Poppins',sans-serif;
-}
-.space{
-  margin-top: 16px;
-}
-.show{
-  position: absolute;
-  right: 13px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #222;
-  display: none;
-  cursor: pointer;
-  font-family: 'Montserrat',sans-serif;
-}
-.pass-key:valid ~ .show{
-  display: block;
-}
-.pass{
-  text-align: left;
-  margin: 10px 0;
-}
-.pass a{
-  color: white;
-  text-decoration: none;
-  font-family: 'Poppins',sans-serif;
-  font-size: small;
-}
-.pass:hover a{
-  text-decoration: underline;
-}
-.field input[type="submit"]{
-  background: #3498db;
-  border:1px solid #2691d9;
-  border-radius: 5px;
-  color: white;
-  font-size: 18px;
-  letter-spacing: 1px;
-  font-weight: 600;
-  cursor: pointer;
-  font-family: 'Montserrat',sans-serif;
-}
-.field input[type="submit"]:hover{
-  background: #2486c8;
-}
-.login{
-  color: white;
-  margin: 20px 0;
-  font-family: 'Poppins',sans-serif;
-}
-.links{
-  display: flex;
-  cursor: pointer;
-  color: white;
-  margin: 0 0 10px 0;
-}
-.facebook,.instagram{
-  width: 100%;
-  height: 45px;
-  line-height: 45px;
-  margin-left: 10px;
-}
-.facebook{
-  margin-left: 0;
-  background: #4267B2;
-  border: 1px solid #3e61a8;
-}
-.instagram{
-  background: #E1306C;
-  border: 1px solid #df2060;
-}
-.facebook:hover{
-  background: #3e61a8;
-}
-.instagram:hover{
-  background: #df2060;
-}
-.links i{
-  font-size: 17px;
-}
-i span{
-  margin-left: 8px;
-  font-weight: 500;
-  letter-spacing: 1px;
-  font-size: 16px;
-  font-family: 'Poppins',sans-serif;
-}
-.signup{
-  font-size: 15px;
-  color: white;
-  font-family: 'Poppins',sans-serif;
-}
-.signup a{
-  color: #3498db;
-  text-decoration: none;
-}
-.signup a:hover{
-  text-decoration: underline;
+  padding-bottom: 1rem;
 }
 
-/* Style the select dropdown */
-select {
-  width: 100%;
-  padding: 12px;
-  background-color: #f9f9f9;
-  font-size: 16px;
-  font-weight: 700;
-  color: #000;
-  cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  appearance: none; /* Remove default dropdown arrow */
-  -webkit-appearance: none;
-  -moz-appearance: none;
+.content header:after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 3px;
+  background: var(--accent-gold);
+  border-radius: 3px;
 }
 
-/* Add custom arrow icon */
-select:after {
-  content: '\25BC'; /* Unicode for downward arrow */
+/* Form field styling */
+.field {
+  position: relative;
+  margin-bottom: 0.5rem;
+  transition: var(--transition);
+}
+
+.field span {
   position: absolute;
-  right: 10px;
+  left: 15px;
   top: 50%;
   transform: translateY(-50%);
-  pointer-events: none; /* So the arrow is not clickable */
+  color: var(--primary-light);
+  font-size: 1.1rem;
+  transition: var(--transition);
 }
 
-/* Style the options inside dropdown */
-option {
-  padding: 10px;
-  background-color: #fff;
-  color: #000;
+.field input {
+  width: 100%;
+  padding: 15px 15px 15px 45px;
+  font-size: 1rem;
+  border: 2px solid #E2E8F0;
+  border-radius: 8px;
+  background-color: #F8FAFC;
+  transition: var(--transition);
+  color: var(--text-dark);
+  font-weight: 500;
 }
 
-/* Hover effect for options */
-select:hover {
-  border-color: #b68c50;
-  background-color: #fff;
-}
-
-/* Focus state for the dropdown */
-select:focus {
+.field input:focus {
   outline: none;
-  border-color: #a67938;
-  box-shadow: 0 0 5px rgba(166, 121, 56, 0.5);
+  border-color: var(--accent-gold);
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(201, 166, 107, 0.2);
+}
+
+.field input:focus + span {
+  color: var(--accent-gold);
+}
+
+/* Password field specific styling */
+.field.password-field {
+  margin-bottom: 1rem;
+}
+
+.field.password-field input {
+  padding-right: 50px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--primary-light);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: var(--transition);
+  padding: 5px;
+  z-index: 2;
+}
+
+.password-toggle:hover {
+  color: var(--accent-gold);
+}
+
+.password-toggle i {
+  transition: var(--transition);
+}
+
+.password-toggle .fa-eye-slash {
+  display: none;
+}
+
+.password-field.show-password .fa-eye {
+  display: none;
+}
+
+.password-field.show-password .fa-eye-slash {
+  display: inline;
+}
+
+/* Password strength meter */
+.password-strength {
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+
+.password-strength-bar {
+  height: 100%;
+  width: 0;
+  transition: width 0.3s ease;
+}
+
+.password-field.weak .password-strength-bar {
+  width: 30%;
+  background: var(--error-red);
+}
+
+.password-field.medium .password-strength-bar {
+  width: 60%;
+  background: #FFB74D;
+}
+
+.password-field.strong .password-strength-bar {
+  width: 100%;
+  background: var(--success-green);
+}
+
+/* Show password state */
+.password-field.show-password input {
+  letter-spacing: 1px;
+}
+
+/* Submit button */
+.field input[type="submit"] {
+  background: linear-gradient(135deg, var(--accent-gold), #B38B4F);
+  color: white;
+  border: none;
+  padding: 15px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  margin-top: 0.3rem;
+  transition: var(--transition);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.field input[type="submit"]:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.field input[type="submit"]:active {
+  transform: translateY(0);
+}
+
+/* Links */
+.pass {
+  text-align: right;
+  margin: -0.5rem 0 1rem 0;
+}
+
+.pass a, .signup a {
+  color: var(--primary-light);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.pass a:hover, .signup a:hover {
+  color: var(--accent-gold);
+  text-decoration: underline;
+}
+
+.signup {
+  text-align: center;
+  margin-top: 0.5rem;
+  color: var(--text-dark);
+  font-size: 0.95rem;
+}
+
+/* Modal styling */
+.modal-content {
+  border: none;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  background-color: var(--primary-dark);
+  color: white;
+  border-bottom: 2px solid var(--accent-gold);
+  padding: 1.2rem;
+}
+
+.modal-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.modal-body {
+  padding: 1.5rem;
+  font-size: 1rem;
+  line-height: 1.6;
+  animation: slideUp 0.4s ease-out;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+  .logo-header-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .content header {
+    font-size: 1.8rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .logo i {
+    font-size: 1.8rem;
+  }
+
+  .content {
+    width: 90%;
+    padding: 2rem 1.5rem;
+  }
+  
+}
+
+/* Floating animation */
+@keyframes float {
+  0%, 100% { transform: translate(-50%, -50%); }
+  50% { transform: translate(-50%, -53%); }
+}
+
+.content {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Input error state */
+.field.error input {
+  border-color: var(--error-red);
+}
+
+.field.error input:focus {
+  box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.2);
+}
+
+.field.success input {
+  border-color: var(--success-green);
 }

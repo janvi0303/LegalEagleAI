@@ -3,8 +3,6 @@ import firebase_admin
 from firebase_admin import credentials, db, auth
 from flask import Blueprint, request, jsonify, session, url_for, redirect, render_template
 from flask_mailman import Mail, EmailMessage
-import psycopg2
-from psycopg2 import sql
 from dotenv import load_dotenv
 from contextlib import contextmanager
 import logging
@@ -18,7 +16,7 @@ logger = logging.getLogger(__name__)
 admin_bp = Blueprint('admin', __name__)
 
 # Firebase Initialization
-cred = credentials.Certificate("/etc/secrets/firebase_admin_config.json")
+cred = credentials.Certificate("config/firebase_admin_config.json")
 firebase_admin.initialize_app(cred, {
     'databaseURL': os.getenv('FIREBASE_DB_URL')
 })
@@ -36,37 +34,6 @@ def init_mail(app):
     mail.init_app(app)
 
 # Database connection helper
-@contextmanager
-def get_db_connection():
-    conn = None
-    try:
-        conn = psycopg2.connect(
-            host="localhost",
-            dbname="mydatabase",
-            user="postgres",
-            password="123"
-        )
-        yield conn
-    except psycopg2.Error as e:
-        logger.error(f"Database connection error: {str(e)}")
-        raise
-    finally:
-        if conn:
-            conn.close()
-
-@contextmanager
-def get_db_cursor():
-    with get_db_connection() as conn:
-        cursor = conn.cursor()
-        try:
-            yield cursor
-            conn.commit()
-        except:
-            conn.rollback()
-            raise
-        finally:
-            cursor.close()
-
 # Fixed Admin Credentials
 ADMIN_USERNAME = "admin"
 ADMIN_PASSWORD = "admin123"
@@ -416,11 +383,7 @@ def delete_appointment():
         if not deleted_from_firebase:
             return jsonify({"error": "Appointment not found in Firebase"}), 404
 
-        # Delete from PostgreSQL
-        with get_db_cursor() as cur:
-            cur.execute("DELETE FROM clientappointments WHERE id = %s", (appointment_id,))
-
-        return jsonify({"message": "Appointment deleted from both Firebase and PostgreSQL"})
+        return jsonify({"message": "Appointment deleted from both Firebase"})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

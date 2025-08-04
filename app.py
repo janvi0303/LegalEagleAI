@@ -435,49 +435,13 @@ def recommend_lawyers(query, min_price=None, max_price=None, sort_order=None, lo
 
 
 # Database configuration 
-DB_HOST = 'localhost'
-DB_NAME = 'mydatabase'
-DB_USER = 'postgres'
-DB_PASSWORD = '123'
-
-# Connect to PostgreSQL
-def connect_db():
-    return psycopg2.connect(
-        host=DB_HOST,
-        dbname=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD
-    )
-
-# Function to create the appointments table if it doesn’t exist
-def create_table():
-    conn = connect_db()
-    cur = conn.cursor()
-    create_table_query = """
-    CREATE TABLE IF NOT EXISTS public.clientappointments (
-        id SERIAL PRIMARY KEY,
-        appointment_date DATE NOT NULL,
-        client_name VARCHAR(100) NOT NULL,
-        client_email VARCHAR(100) NOT NULL,
-        appointment_time TIME NOT NULL,
-        case_details TEXT NOT NULL,
-        lawyer_name VARCHAR(100) NOT NULL,
-        barcouncil_id VARCHAR(100) NOT NULL
-    );
-    """
-    cur.execute(create_table_query)
-    conn.commit()
-    cur.close()
-    conn.close()
-# Call create_table when the app starts
-create_table()
 @app.route('/booking.html')
 def booking():
     lawyer_name = request.args.get('lawyer')  # Get lawyer name from URL parameters
     barcouncil_id = request.args.get('barcouncil_id', '').replace('/', '_')
     return render_template('booking.html', lawyer_name=lawyer_name, barcouncil_id=barcouncil_id)
 
-# Route to handle form submissions
+# Route to handle form submissions (Firebase version)
 @app.route('/book_appointment', methods=['POST'])
 def book_appointment():
     data = request.json
@@ -492,94 +456,52 @@ def book_appointment():
     print(f"[Server] Received Bar Council ID in request: {barcouncil_id}")
 
     try:
-        # Parse the date and time to a datetime object
+        # Parse date and time to datetime object
         appointment_datetime = datetime.strptime(f"{appointment_date} {appointment_time}", "%Y-%m-%d %H:%M")
         appointment_end_time = appointment_datetime + timedelta(minutes=30)
 
-        # Connect to database and check for overlapping appointments
-        conn = connect_db()
-        cur = conn.cursor()
+        # ✅ Check for overlapping appointments in Firebase
+        all_bookings = db.reference('bookings').get() or {}
+        for user_email, appointments in all_bookings.items():
+            for appt in appointments.values():
+                if appt.get("lawyer_name") == lawyer_name and appt.get("appointment_date") == appointment_date:
+                    appt_time_str = appt.get("appointment_time")
+                    try:
+                        appt_time = datetime.strptime(f"{appointment_date} {appt_time_str}", "%Y-%m-%d %H:%M")
+                        appt_end_time = appt_time + timedelta(minutes=30)
+                        if (appointment_datetime < appt_end_time and appointment_end_time > appt_time):
+                            return jsonify({"message": f"This time slot is already booked for {lawyer_name}. Please choose another time."}), 400
+                    except Exception as e:
+                        print(f"Error parsing existing appointment time: {e}")
 
-        check_query = """
-        SELECT * FROM public.clientappointments
-        WHERE lawyer_name = %s 
-        AND appointment_date = %s
-        AND (
-            (appointment_time <= %s AND appointment_time + interval '30 minutes' > %s)
-            OR (appointment_time >= %s AND appointment_time < %s)
-        );
-        """
+        # ✅ Save to Firebase
+        booking_data = {
+            "id": f"{int(datetime.now().timestamp())}",  # Use timestamp as ID
+            "appointment_date": appointment_date,
+            "client_name": client_name,
+            "client_email": client_email,
+            "appointment_time": appointment_time,
+            "case_details": case_details,
+            "lawyer_name": lawyer_name,
+            "Bar_Council_ID": barcouncil_id,
+            "status": "scheduled"
+        }
+        sanitized_email = client_email.replace('.', ',')
+        db.reference(f'bookings/{sanitized_email}').push().set(booking_data)
 
-        cur.execute(check_query, (lawyer_name, appointment_date, appointment_datetime.time(), 
-                                appointment_datetime.time(), appointment_datetime.time(), 
-                                appointment_end_time.time()))
-        overlapping_appointments = cur.fetchall()
+        # ✅ Send confirmation email
+        email_sent = send_email(client_name, client_email, appointment_date,
+                                appointment_time, case_details, lawyer_name)
 
-        if overlapping_appointments:
-            cur.close()
-            conn.close()
-            return jsonify({"message": f"This time slot is already booked for {lawyer_name}. Please choose another time."}), 400
-
-        # Insert the new appointment into PostgreSQL (without barcouncilid)
-        insert_query = """
-        INSERT INTO public.clientappointments (
-            appointment_date, client_name, client_email, 
-            lawyer_name, appointment_time, case_details,barcouncil_id
-        )
-        VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id;
-        """
-        cur.execute(insert_query, (
-            appointment_date, client_name, client_email, 
-            lawyer_name, appointment_time, case_details, barcouncil_id
-        ))
-        
-        # Get the newly created appointment ID
-        appointment_id = cur.fetchone()[0]
-        conn.commit()
-
-        # Send confirmation email
-        email_sent = send_email(client_name, client_email, appointment_date, 
-                              appointment_time, case_details, lawyer_name)
-        
-        # Push to Firebase with barcouncilid
-        try:
-            booking_data = {
-                "id": appointment_id,
-                "appointment_date": appointment_date,
-                "client_name": client_name,
-                "client_email": client_email,
-                "appointment_time": appointment_time,
-                "case_details": case_details,
-                "lawyer_name": lawyer_name,
-                "Bar_Council_ID": barcouncil_id  # Stored only in Firebase
-            }
-            # Push to Firebase (auto-generates unique key)
-            sanitized_email = client_email.replace('.', ',')
-            db.reference(f'bookings/{sanitized_email}').push().set(booking_data)
-            
-        except Exception as e:
-            print(f"Firebase sync error: {e} (booking still saved to PostgreSQL)")
-        
         if email_sent:
             return jsonify({"success": True, "message": "Appointment booked successfully, and confirmation email sent!"})
         else:
             return jsonify({"success": False, "message": "Appointment booked, but email confirmation failed."}), 500
-    
-    finally:
-        # Ensure the database connection is closed
-        if 'cur' in locals():
-            cur.close()
-        if 'conn' in locals():
-            conn.close()
-            
-@app.route('/<path:path>')
-def serve_static(path):
-    if path.startswith('static/'):
-        return send_from_directory('static', path[7:])
-    elif path.startswith('templates/'):
-        return send_from_directory('templates', path[10:])
-    return send_from_directory('templates', 'index.html')
-           
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+        
+          
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  
     app.run(host='0.0.0.0', port=port)

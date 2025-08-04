@@ -1,298 +1,915 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>LegalEagle</title>
+<head>
+    <title>LegalEagle AI Dashboard</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:200,300,400,700,900|Oswald:400,700"> 
-    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/icomoon/style.css') }}">
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.theme.default.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/mediaelementplayer.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/flaticon/font/flaticon.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/fl-bigmug-line.css') }}">
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/aos.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-
-    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Chatbot CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Animation Libraries -->
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/@dotlottie/player-component@2.7.12/dist/dotlottie-player.mjs" type="module"></script>
 
     <style>
-      #chat-circle {
-        position: fixed;
-        bottom: 20px;
-        right: 10px;
-        width: 120px;
-        height: 120px;
-        cursor: pointer;
-      }
+        :root {
+            --primary: #1a2a3a;
+            --secondary: #d4a017;
+            --accent: #4a90e2;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #28a745;
+            --error: #dc3545;
+            --transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
 
-      .chat-box {
-        display: none;
-        background:rgba(205, 149, 117, 0.7);;
-        position: fixed;
-        right: 30px;
-        bottom: 50px;
-        width: 300px;
-        max-width: 85vw;
-        max-height: 100vh;
-        border-radius: 15px;
-        box-shadow: 0px 5px 35px 9px;
-        padding: 10px;
-      }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-      .chat-box-toggle {
-        float: right;
-        cursor: pointer;
-        color: black;
-      }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+            color: var(--primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-      .chat-box-body {
-        width: 100%;
-        display: flex;
-        flex-direction: column-reverse;
-        scroll-behavior: smooth;
-        font-family: Verdana, sans-serif;
-        position: relative;
-        overflow-y: auto;
-        max-height: 300px;
-        scrollbar-width: none;
-        padding: 10px;
-      }
+        /* Fixed Navigation */
+        .navbar {
+            padding: 1rem 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            transform: translateY(0);
+            transition: var(--transition);
+        }
 
-      /* Message Styling */
-      .chat-msg {
-        display: flex;
-        align-items: center;
-        margin: 10px 0;
-        font-size: 10px;
-        max-width: 95%;
-      }
+        .navbar.hidden {
+            transform: translateY(-100%);
+        }
 
-      .chat-msg.user {
-        justify-content: flex-end;
-      }
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 1.8rem;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition);
+        }
 
-      .chat-msg.bot {
-        justify-content: flex-start;
-      }
+        .logo span {
+            color: var(--secondary);
+        }
 
-      .cm-msg-text {
-        background: #ffebcd;
-        color: #000;
-        padding: 8px 10px;
-        border-radius: 10px;
-        position: relative;
-        font-weight: 400;
-        max-width: 85%;
-        line-height: 1.5;
-      }
+        .logo-icon {
+            color: var(--secondary);
+            font-size: 1.5rem;
+            animation: float 3s ease-in-out infinite;
+        }
 
-      .chat-msg.user .cm-msg-text {
-        border-radius: 10px 10px 0 10px;
-      }
+        .logout-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
 
-      .chat-msg.bot .cm-msg-text {
-        border-radius: 10px 10px 10px 0;
-      }
+        .logout-btn:hover {
+            background: #0f1c29;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
 
-      /* Tail Design */
-      .chat-msg.user .cm-msg-text::before {
-        content: "";
-        position: absolute;
-        right: -10px;
-        top: 50%;
-        transform: translateY(-50%);
-        border: 10px solid transparent;
-        border-left-color: #ffebcd;
-      }
+        /* Custom Modal Styles */
+        .custom-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
 
-      .chat-msg.bot .cm-msg-text::before {
-        content: "";
-        position: absolute;
-        left: -10px;
-        top: 50%;
-        transform: translateY(-50%);
-        border: 10px solid transparent;
-        border-right-color: #ffebcd;
-      }
+        .custom-modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
 
-      /* Input Box */
-      .chat-input {
-        position: relative;
-        margin-top: 10px;
-      }
+        .custom-modal {
+            background: white;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 400px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(20px);
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+        }
 
-      #chat-input {
-        background: #fff;
-        width: 100%;
-        height: 40px;
-        padding: 10px;
-        border: 1px solid #ccc;
-        outline: none;
-        border-radius: 10px;
-        color: #333;
-        font-size: 12px;
-      }
+        .custom-modal-overlay.show .custom-modal {
+            transform: translateY(0);
+        }
 
-      .chat-submit {
-        position: absolute;
-        bottom: 0px;
-        right: 10px;
-        background: transparent;
-        border: none;
-        border-radius: 50%;
-        color: black;
-        width: 35px;
-        height: 35px;
-      }
-      a{
-        font-size: 15px;
-      }
-      .custom-modal {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-        width: 300px;
-        text-align: center;
-        z-index: 1000;
-    }
-    .custom-modal-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    .custom-modal-close {
-        cursor: pointer;
-        font-size: 20px;
-    }
+        .custom-modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .custom-modal-icon {
+            font-size: 3rem;
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            animation: bounce 1s;
+        }
+
+        .custom-modal-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary);
+        }
+
+        .custom-modal-body {
+            margin-bottom: 2rem;
+            color: #666;
+        }
+
+        .custom-modal-footer {
+            display: flex;
+            justify-content: center;
+        }
+
+        .custom-modal-btn {
+            padding: 0.8rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .custom-modal-btn:hover {
+            background: var(--secondary);
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100%;
+            min-height: calc(170vh - 240px);
+            display: flex;
+            align-items: center;
+            background: linear-gradient(rgba(26, 42, 58, 0.8), rgba(26, 42, 58, 0.8)), 
+                        url('https://images.unsplash.com/photo-1589829545856-d10d557cf95f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80') no-repeat center center;
+            background-size: cover;
+            padding: 0 8%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            color: white;
+            z-index: 1;
+            transform: translateY(50px);
+            opacity: 0;
+            animation: fadeInUp 1s 0.5s forwards;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            margin-bottom: 1.8rem;
+            opacity: 0.9;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        /* Hexagonal Action Cards */
+        .action-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 3rem;
+            padding: 4rem 8%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            transform: translateY(50px);
+            opacity: 0;
+            clip-path: polygon(
+                0% 15%, 
+                15% 15%, 
+                15% 0%, 
+                85% 0%, 
+                85% 15%, 
+                100% 15%, 
+                100% 85%, 
+                85% 85%, 
+                85% 100%, 
+                15% 100%, 
+                15% 85%, 
+                0% 85%
+            );
+        }
+
+        .action-card:nth-child(1) {
+            animation: fadeInUp 0.8s 0.8s forwards;
+        }
+        .action-card:nth-child(2) {
+            animation: fadeInUp 0.8s 1s forwards;
+        }
+        .action-card:nth-child(3) {
+            animation: fadeInUp 0.8s 1.2s forwards;
+        }
+
+        .action-card:hover {
+            transform: translateY(-10px) scale(1.03) !important;
+            box-shadow: var(--shadow-lg);
+            clip-path: polygon(
+                0% 10%, 
+                10% 10%, 
+                10% 0%, 
+                90% 0%, 
+                90% 10%, 
+                100% 10%, 
+                100% 90%, 
+                90% 90%, 
+                90% 100%, 
+                10% 100%, 
+                10% 90%, 
+                0% 90%
+            );
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            color: var(--secondary);
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .action-card:hover .card-icon {
+            transform: rotate(15deg) scale(1.2);
+            color: var(--primary);
+        }
+
+        .card-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            position: relative;
+            display: inline-block;
+        }
+
+        .card-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 3px;
+            background: var(--secondary);
+            transition: var(--transition);
+        }
+
+        .action-card:hover .card-title::after {
+            width: 80px;
+            background: var(--primary);
+        }
+
+        .card-desc {
+            color: #666;
+            margin-bottom: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .action-card:hover .card-desc {
+            color: #444;
+        }
+
+        .card-btn {
+            display: inline-block;
+            padding: 0.8rem 1.5rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: 0.5s;
+        }
+
+        .card-btn:hover::before {
+            left: 100%;
+        }
+
+        .card-btn:hover {
+            background: var(--secondary);
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 6rem 8%;
+            position: relative;
+            overflow: hidden;
+            background: url('https://www.transparenttextures.com/patterns/cubes.png');
+            background-attachment: fixed;
+            background-size: 300px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-family: 'Playfair Display', serif;
+            font-size: 2.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--secondary);
+            border-radius: 2px;
+            transform-origin: left;
+            transform: scaleX(0);
+            animation: scaleIn 1s 1.5s forwards;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2.5rem;
+        }
+
+        .feature-item {
+            background: white;
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            text-align: center;
+            transform: scale(0.9);
+            opacity: 0;
+            animation: fadeInScale 0.8s forwards;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .feature-item:nth-child(1) { animation-delay: 1.6s; }
+        .feature-item:nth-child(2) { animation-delay: 1.8s; }
+        .feature-item:nth-child(3) { animation-delay: 2.0s; }
+        .feature-item:nth-child(4) { animation-delay: 2.2s; }
+        .feature-item:nth-child(5) { animation-delay: 2.4s; }
+        .feature-item:nth-child(6) { animation-delay: 2.6s; }
+
+        .feature-item:hover {
+            transform: scale(1.05) !important;
+            box-shadow: var(--shadow-md);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(212, 160, 23, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            transition: var(--transition);
+        }
+
+        .feature-item:hover .feature-icon {
+            background: rgba(212, 160, 23, 0.2);
+            transform: rotate(15deg);
+        }
+
+        .feature-icon i {
+            font-size: 2rem;
+            color: var(--secondary);
+        }
+
+        .feature-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .feature-desc {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        /* Original Chatbot Styling */
+        #chat-circle {
+            position: fixed;
+            bottom: 20px;
+            right: 10px;
+            width: 120px;
+            height: 120px;
+            cursor: pointer;
+            z-index: 1000;
+        }
+
+        .chat-box {
+            display: none;
+            background:rgba(205, 149, 117, 0.7);
+            position: fixed;
+            right: 30px;
+            bottom: 50px;
+            width: 300px;
+            max-width: 85vw;
+            max-height: 100vh;
+            border-radius: 15px;
+            box-shadow: 0px 5px 35px 9px;
+            padding: 10px;
+            z-index: 1000;
+        }
+
+        .chat-box-toggle {
+            float: right;
+            cursor: pointer;
+            color: black;
+        }
+
+        .chat-box-body {
+            width: 100%;
+            display: flex;
+            flex-direction: column-reverse;
+            scroll-behavior: smooth;
+            font-family: Verdana, sans-serif;
+            position: relative;
+            overflow-y: auto;
+            max-height: 300px;
+            scrollbar-width: none;
+            padding: 10px;
+        }
+
+        .chat-msg {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            font-size: 10px;
+            max-width: 95%;
+        }
+
+        .chat-msg.user {
+            justify-content: flex-end;
+        }
+
+        .chat-msg.bot {
+            justify-content: flex-start;
+        }
+
+        .cm-msg-text {
+            background: #ffebcd;
+            color: #000;
+            padding: 8px 10px;
+            border-radius: 10px;
+            position: relative;
+            font-weight: 400;
+            max-width: 85%;
+            line-height: 1.5;
+        }
+
+        .chat-msg.user .cm-msg-text {
+            border-radius: 10px 10px 0 10px;
+        }
+
+        .chat-msg.bot .cm-msg-text {
+            border-radius: 10px 10px 10px 0;
+        }
+
+        .chat-msg.user .cm-msg-text::before {
+            content: "";
+            position: absolute;
+            right: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 10px solid transparent;
+            border-left-color: #ffebcd;
+        }
+
+        .chat-msg.bot .cm-msg-text::before {
+            content: "";
+            position: absolute;
+            left: -10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: 10px solid transparent;
+            border-right-color: #ffebcd;
+        }
+
+        .chat-input {
+            position: relative;
+            margin-top: 10px;
+        }
+
+        #chat-input {
+            background: #fff;
+            width: 100%;
+            height: 40px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            outline: none;
+            border-radius: 10px;
+            color: #333;
+            font-size: 12px;
+        }
+
+        .chat-submit {
+            position: absolute;
+            bottom: 0px;
+            right: 10px;
+            background: transparent;
+            border: none;
+            border-radius: 50%;
+            color: black;
+            width: 35px;
+            height: 35px;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-20px); }
+            60% { transform: translateY(-10px); }
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInScale {
+            from { 
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to { 
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes scaleIn {
+            from { transform: scaleX(0); }
+            to { transform: scaleX(1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .action-cards {
+                grid-template-columns: 1fr;
+                padding: 2rem;
+            }
+            
+            .features {
+                padding: 0 2rem 4rem;
+            }
+            
+            .action-card {
+                clip-path: none;
+            }
+            
+            .action-card:hover {
+                clip-path: none;
+            }
+        }
     </style>
-    
-  </head>
-  <body>
-           <!-- Bootstrap Modal (Centered) -->
-<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered"> <!-- Added 'modal-dialog-centered' -->
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title" id="messageModalLabel">Message</h5>
-          </div>
-          <div class="modal-body">
-              <p id="modalMessage"></p>
-          </div>
-      </div>
-  </div>
-</div>
+</head>
+<body>
+    <!-- Fixed Navigation -->
+    <nav class="navbar">
+        <a href="#" class="logo">
+            <i class="fas fa-gavel logo-icon"></i>
+            <span>LegalEagle</span>AI<span>.</span>
+        </a>
+        <button class="logout-btn" id="logout">
+            <i class="fas fa-sign-out-alt"></i> LOGOUT
+        </button>
+    </nav>
 
-<!-- Bootstrap JS & CSS (Only for Modal) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-  
-  <div class="site-wrap">
-
-    <div class="site-navbar mt-4">
-        <div class="container py-1">
-          <div class="row align-items-center">
-            <div class="col-8 col-md-8 col-lg-4">
-              <h1 class="mb-0"><a href="#" class="text-white h2 mb-0"><strong>LegalEagle AI<span class="text-primary">.</span></strong></a></h1>
+    <!-- Welcome User Modal -->
+    <div class="custom-modal-overlay" id="welcomeModal">
+        <div class="custom-modal">
+            <div class="custom-modal-header">
+                <div class="custom-modal-icon">
+                    <i class="fas fa-handshake"></i>
+                </div>
+                <h3 class="custom-modal-title">Welcome Back!</h3>
             </div>
-            <div class="col-4 col-md-4 col-lg-8">
-              <nav class="site-navigation text-right text-md-right" role="navigation">
-
-                <div class="d-inline-block d-lg-none ml-md-0 mr-auto py-3"><a href="#" class="site-menu-toggle js-menu-toggle text-white"><span class="icon-menu h3"></span></a></div>
-
-                <ul class="site-menu js-clone-nav d-none d-lg-block">
-                  <li class="active">
-                    <a href="{{ url_for('index') }}">Home</a>
-                  </li>
-                  <li><a href="#">About us</a></li>
-                  <li><a href="#">Services</a></li>
-                  <li><a href="#">Contact us</a></li>
-                  <!-- In the navigation menu -->
-                  <li><a href="{{ url_for('client_appointment_detail') }}">My Appointments</a></li>
-                  <li>
-                    <p><input type="submit" class="btn-primary px-3 py-2" id="logout" value="LOGOUT"></p></li>
-                </ul>
-              </nav>
-              </div>
+            <div class="custom-modal-body">
+                <p>You're successfully logged in to LegalEagle AI. We're here to provide you with top-notch legal assistance.</p>
             </div>
-
-          </div>
+            <div class="custom-modal-footer">
+                <button class="custom-modal-btn" id="welcomeModalClose">Get Started</button>
+            </div>
         </div>
-      </div>
     </div>
 
-    <div class="site-mobile-menu">
-      <div class="site-mobile-menu-header">
-        <div class="site-mobile-menu-close mt-3">
-          <span class="icon-close2 js-menu-toggle"></span>
+    <!-- Logout Success Modal -->
+    <div class="custom-modal-overlay" id="logoutModal">
+        <div class="custom-modal">
+            <div class="custom-modal-header">
+                <div class="custom-modal-icon">
+                    <i class="fas fa-sign-out-alt"></i>
+                </div>
+                <h3 class="custom-modal-title">Logged Out</h3>
+            </div>
+            <div class="custom-modal-body">
+                <p>You have been successfully logged out. We hope to see you again soon!</p>
+            </div>
+            <div class="custom-modal-footer">
+                <button class="custom-modal-btn" id="logoutModalClose">Close</button>
+            </div>
         </div>
-      </div>
-      <div class="site-mobile-menu-body"></div>
-    </div> <!-- .site-mobile-menu -->
-    
-    <div class="site-blocks-cover overlay" style="background-image: url('static/images/img_1.jpg'); background-color: rgba(1, 28, 57,0.6)" >
-      <div class="container">
-        <div class="row align-items-center justify-content-center">
-          <div class="col-md-8 text-center">
-            <h1 class="mb-4">Effortless Legal Guidance at Your Fingertips</h1>
-            <p><a href="{{ url_for('recommend_lawyers_route') }}" class="btn btn-primary px-5 py-3">FIND YOUR LAWYER NOW</a></p>
-          </div>
-        </div>
-      </div>
     </div>
-    <!-- Chatbot UI -->
-    <div id="body">
-      <div id="chat-circle">
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Effortless Legal Guidance at Your Fingertips</h1>
+            <p>Connect with expert lawyers and get personalized legal advice tailored to your needs.</p>
+            <a href="{{ url_for('recommend_lawyers_route') }}" class="card-btn" data-aos="fade-up" data-aos-delay="200">
+                Find Your Lawyer Now
+            </a>
+        </div>
+    </section>
+
+    <!-- Hexagonal Action Cards -->
+    <div class="action-cards">
+        <div class="action-card">
+            <div class="card-icon">
+                <i class="fas fa-home"></i>
+            </div>
+            <h3 class="card-title">Home</h3>
+            <p class="card-desc">Return to the main dashboard with all essential features</p>
+            <a href="{{ url_for('index') }}" class="card-btn">Go Home</a>
+        </div>
+        
+        <div class="action-card">
+            <div class="card-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <h3 class="card-title">My Appointments</h3>
+            <p class="card-desc">View, manage and reschedule your legal consultations</p>
+            <a href="{{ url_for('client_appointment_detail') }}" class="card-btn">View Appointments</a>
+        </div>
+        
+        <div class="action-card">
+            <div class="card-icon">
+                <i class="fas fa-question-circle"></i>
+            </div>
+            <h3 class="card-title">Help Center</h3>
+            <p class="card-desc">Get immediate assistance and answers to your questions</p>
+            <a href="#" class="card-btn">Get Help</a>
+        </div>
+    </div>
+
+    <!-- Features Section with 6 Points -->
+    <section class="features">
+        <h2 class="section-title">Why Choose LegalEagle AI</h2>
+        
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-alt"></i>
+                </div>
+                <h3 class="feature-title">Verified Professionals</h3>
+                <p class="feature-desc">All lawyers undergo strict verification and credential checks.</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <h3 class="feature-title">24/7 Availability</h3>
+                <p class="feature-desc">Access legal help whenever you need it, day or night.</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3 class="feature-title">Secure & Confidential</h3>
+                <p class="feature-desc">Military-grade encryption protects all your communications.</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-hand-holding-usd"></i>
+                </div>
+                <h3 class="feature-title">Transparent Pricing</h3>
+                <p class="feature-desc">No hidden costs - know exactly what you'll pay upfront.</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h3 class="feature-title">Instant Matching</h3>
+                <p class="feature-desc">Get matched with the perfect lawyer in under 60 seconds.</p>
+            </div>
+            
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-star"></i>
+                </div>
+                <h3 class="feature-title">Client-First Approach</h3>
+                <p class="feature-desc">Your satisfaction is guaranteed with our money-back policy.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Original Chatbot UI -->
+    <div id="chat-circle">
         <dotlottie-player src="https://lottie.host/b89214c5-0ac8-4729-b772-73cf5c5eac58/8RL2HzEFFM.lottie" background="transparent" speed="1" style="width: 120px; height: 120px;" loop autoplay>
         </dotlottie-player>
-      </div>
+    </div>
 
-      <div class="chat-box">
+    <div class="chat-box">
         <span class="chat-box-toggle"><i class="material-icons">close</i></span>
         <div class="chat-box-body">
-          <div class="chat-box-overlay"></div>
-          <div class="chat-logs"></div>
+            <div class="chat-box-overlay"></div>
+            <div class="chat-logs"></div>
         </div>
         <div class="chat-input">
-          <form>
-            <input type="text" id="chat-input" placeholder="Send a message..." />
-            <button type="submit" class="chat-submit" id="chat-submit">
-              <i class="material-icons">send</i>
-            </button>
-          </form>
+            <form>
+                <input type="text" id="chat-input" placeholder="Send a message..." />
+                <button type="submit" class="chat-submit" id="chat-submit">
+                    <i class="material-icons">send</i>
+                </button>
+            </form>
         </div>
-      </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+        <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/2.4.0/purify.min.js"></script>
+    
     <script>
-      // Pass the URL dynamically from Flask to a global JavaScript variable
-      const indexUrl = "{{ url_for('index') }}";
-      window.firebaseConfig = {
-        apiKey: "{{ firebase_api_key }}",
-        authDomain: "{{ firebase_auth_domain }}",
-        projectId: "{{ firebase_project_id }}",
-        storageBucket: "{{ firebase_storage_bucket }}",
-        messagingSenderId: "{{ firebase_messaging_sender_id }}",
-        appId: "{{ firebase_app_id }}"
-    };
+        // Initialize AOS animations
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+
+        // Show welcome modal on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            const welcomeModal = document.getElementById('welcomeModal');
+
+            // Only show the welcome modal if not already shown in this session
+            if (!sessionStorage.getItem('welcomeShown')) {
+                welcomeModal.classList.add('show');
+                sessionStorage.setItem('welcomeShown', 'true');
+            }
+
+            // Close welcome modal
+            document.getElementById('welcomeModalClose').addEventListener('click', function () {
+                welcomeModal.classList.remove('show');
+            });
+        });
+
+
+        // Navbar scroll effect
+        let lastScroll = 0;
+        window.addEventListener('scroll', function() {
+            const currentScroll = window.pageYOffset;
+            const navbar = document.querySelector('.navbar');
+            
+            if (currentScroll <= 0) {
+                navbar.classList.remove('hidden');
+                return;
+            }
+            
+            if (currentScroll > lastScroll && !navbar.classList.contains('hidden')) {
+                // Scroll down
+                navbar.classList.add('hidden');
+            } else if (currentScroll < lastScroll && navbar.classList.contains('hidden')) {
+                // Scroll up
+                navbar.classList.remove('hidden');
+            }
+            lastScroll = currentScroll;
+        });
+
+        // Logout functionality
+        document.getElementById("logout")?.addEventListener("click", function() {
+            // Show logout modal
+            const logoutModal = document.getElementById('logoutModal');
+            logoutModal.classList.add('show');
+            
+            // Close logout modal and redirect
+            document.getElementById('logoutModalClose').addEventListener('click', function() {
+                logoutModal.classList.remove('show');
+                // Add your logout logic here
+                window.location.href = "{{ url_for('index') }}"; // Example redirect
+            });
+        });
+
+        // Chatbot functionality (preserved from original)
         $(function () {
             var INDEX = 0;
 
@@ -335,7 +952,6 @@
                 INDEX++;
                 msg = msg.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); 
                 msg = msg.replace(/(\d+\.)\s/g, "<br>$1 "); 
-                // Convert * bullets into an unordered list
                 if (msg.includes('*')) {
                   let items = msg.split('*').filter(item => item.trim() !== '');
                   msg = "<ul style='padding-left: 20px;'>";
@@ -356,31 +972,17 @@
             }
         });
 
-        document.getElementById("questionForm")?.addEventListener("submit", async (event) => {
-            event.preventDefault(); // Prevent form reload
-
-            const question = document.getElementById("question").value;
-
-            try {
-                const response = await fetch("/api/generate", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({ question }),
-                });
-
-                const data = await response.json(); 
-
-                document.getElementById("response").innerHTML = data.response;
-                
-            } catch (error) {
-                document.getElementById("response").textContent = `Error: ${error.message}`;
-            }
-        });
+        // Firebase config
+        window.firebaseConfig = {
+            apiKey: "{{ firebase_api_key }}",
+            authDomain: "{{ firebase_auth_domain }}",
+            projectId: "{{ firebase_project_id }}",
+            storageBucket: "{{ firebase_storage_bucket }}",
+            messagingSenderId: "{{ firebase_messaging_sender_id }}",
+            appId: "{{ firebase_app_id }}"
+        };
     </script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-
+    
     <script type="module" src="{{ url_for('static', filename='js/firebase_Auth.js') }}"></script>
-  </body>
+</body>
 </html>
