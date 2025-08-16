@@ -35,6 +35,12 @@ app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 Session(app)  # ✅ Initialize Session
 
+# With this corrected version:
+nltk_data_path = os.path.join(os.path.dirname(__file__), 'nltk_data')
+nltk.data.path.append(nltk_data_path)
+nltk.download('punkt', download_dir=nltk_data_path)
+nltk.download('stopwords', download_dir=nltk_data_path)
+
 # ✅ Register Blueprints
 app.register_blueprint(admin_bp)
 
@@ -321,9 +327,6 @@ def delete_appointment():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# Download NLTK resources
-nltk.download('punkt')
-nltk.download('stopwords')
 
 # Load dataset
 def fetch_lawyer_profiles():
@@ -488,7 +491,6 @@ def generate():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-load_dotenv()    
 # Load Firebase config and make it globally available before each request
 @app.before_request
 def load_firebase_config():
