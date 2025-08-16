@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,46 +8,164 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-blue: #5D8AA8;
-            --light-blue: #91A8D0;
-            --pastel-blue: #E6F2FF;
-            --accent-blue: #4B9CD3;
-            --dark-blue: #2C5E8B;
-            --shadow: 0 4px 20px rgba(45, 93, 138, 0.15);
+            --sage-green: #8A9B68;
+            --deep-sage: #6B7F4E;
+            --soft-clay: #D8B4A0;
+            --warm-clay: #C97C5D;
+            --linen: #F5EFE6;
+            --parchment: #E8D8C5;
+            --shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1);
         }
         
         body {
-            background: var(--pastel-blue);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--dark-blue);
-            padding: 20px;
+            background-color: var(--linen);
+            font-family: 'Lora', serif;
+            color: #4A4A4A;
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* Watercolor background effect */
+        .watercolor-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+            opacity: 0.15;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800"><path fill="%238A9B68" d="M400,0C300,100,200,200,0,300C100,400,200,500,0,600C200,700,300,800,400,800C500,800,600,700,800,600C600,500,500,400,800,300C600,200,500,100,400,0Z"/></svg>');
+            background-size: cover;
+            animation: watercolorFlow 30s infinite alternate ease-in-out;
+        }
+        
+        @keyframes watercolorFlow {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.15; }
+            50% { transform: scale(1.2) rotate(2deg); opacity: 0.2; }
+            100% { transform: scale(1) rotate(-1deg); opacity: 0.15; }
+        }
+        
+        /* Floating leaf elements */
+        .floating-leaf {
+            position: fixed;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%238A9B68" d="M50,0C30,10,10,30,0,50C10,70,30,90,50,100C70,90,90,70,100,50C90,30,70,10,50,0Z"/></svg>');
+            background-size: contain;
+            background-repeat: no-repeat;
+            opacity: 0.1;
+            z-index: -1;
+            animation: floatLeaf 15s infinite linear;
+        }
+        
+        @keyframes floatLeaf {
+            0% { transform: translate(0, 0) rotate(0deg); opacity: 0.1; }
+            25% { transform: translate(5vw, 10vh) rotate(90deg); opacity: 0.15; }
+            50% { transform: translate(10vw, 5vh) rotate(180deg); opacity: 0.1; }
+            75% { transform: translate(5vw, -5vh) rotate(270deg); opacity: 0.15; }
+            100% { transform: translate(0, 0) rotate(360deg); opacity: 0.1; }
         }
         
         .container {
-            max-width: 95%;
-            margin-top: 20px;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
         }
         
-        .header {
+        /* Header */
+        .profile-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            border-bottom: 3px solid var(--accent-blue);
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(138, 155, 104, 0.2);
+            animation: fadeInDown 0.8s ease-out;
         }
         
-        .header h2 {
-            color: var(--dark-blue);
+        .profile-header h1 {
+            font-family: 'Playfair Display', serif;
             font-weight: 700;
+            color: var(--deep-sage);
             margin: 0;
+            font-size: 2.5rem;
+            position: relative;
         }
         
+        .profile-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: var(--warm-clay);
+            border-radius: 3px;
+        }
+        
+        .back-btn {
+            background: var(--deep-sage);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-family: 'Lora', serif;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(107, 127, 78, 0.2);
+        }
+        
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(107, 127, 78, 0.3);
+            background: var(--sage-green);
+            color: white;
+        }
+        
+        /* Profile Section */
         .profile-section {
-            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            margin-bottom: 50px;
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        @media (max-width: 992px) {
+            .profile-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Profile Card */
+        .profile-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(138, 155, 104, 0.1);
+        }
+        
+        .profile-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, var(--sage-green), var(--warm-clay));
+        }
+        
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
         
         .profile-pic {
@@ -56,87 +173,276 @@
             height: 180px;
             border-radius: 50%;
             object-fit: cover;
-            margin-bottom: 20px;
-            border: 5px solid var(--pastel-blue);
-            box-shadow: var(--shadow);
+            margin: 0 auto 20px;
+            border: 5px solid white;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
         }
         
-        .info-card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            margin-bottom: 30px;
-            border-top: 4px solid var(--accent-blue);
+        .profile-pic:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
         }
         
-        .info-card h3, .info-card h4 {
-            color: var(--dark-blue);
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-        
-        .info-card p {
+        .profile-name {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
             margin-bottom: 5px;
-            color: var(--light-blue);
+            color: var(--deep-sage);
         }
         
-        .info-card strong {
-            color: var(--dark-blue);
-            font-weight: 600;
+        .profile-email {
+            color: #777;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
         }
         
-        .professional-details {
+        .profile-id {
+            background: var(--parchment);
+            padding: 8px 15px;
+            border-radius: 30px;
+            display: inline-block;
+            font-size: 0.9rem;
+            color: var(--deep-sage);
+            margin-bottom: 20px;
+        }
+        
+        /* Details Card */
+        .details-card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(138, 155, 104, 0.1);
+        }
+        
+        .details-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, var(--warm-clay), var(--sage-green));
+        }
+        
+        .details-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: var(--deep-sage);
+            margin-bottom: 25px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 50%;
+            height: 2px;
+            background: var(--warm-clay);
+            border-radius: 2px;
+        }
+        
+        .details-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
             gap: 15px;
         }
         
-        .professional-details p {
-            margin-bottom: 0;
-            padding: 12px;
-            background: var(--pastel-blue);
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(45, 93, 138, 0.05);
+        .detail-item {
+            background: var(--parchment);
+            padding: 15px;
+            border-radius: 12px;
+            transition: var(--transition);
+            border-left: 4px solid var(--sage-green);
         }
         
-        .card-container {
+        .detail-item:hover {
+            transform: translateY(-3px);
+            background: rgba(138, 155, 104, 0.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .detail-label {
+            font-weight: 600;
+            color: var(--deep-sage);
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .detail-value {
+            color: #555;
+            font-size: 1rem;
+        }
+        
+        /* Appointments Section */
+        .appointments-section {
+            animation: fadeIn 0.8s ease-out;
+        }
+        
+        .appointments-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 250px;
+            border: 1px solid rgba(138, 155, 104, 0.3);
+            border-radius: 30px;
+            padding: 12px 20px;
+            font-family: 'Lora', serif;
+            background: white;
+            transition: var(--transition);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--sage-green);
+            box-shadow: 0 4px 15px rgba(138, 155, 104, 0.2);
+        }
+        
+        .search-btn {
+            background: var(--warm-clay);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-family: 'Lora', serif;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(201, 124, 93, 0.2);
+        }
+        
+        .search-btn:hover {
+            background: var(--deep-sage);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(201, 124, 93, 0.3);
+        }
+        
+        .filter-dropdown .btn {
+            background: white;
+            border: 1px solid rgba(138, 155, 104, 0.3);
+            color: var(--deep-sage);
+            border-radius: 30px;
+            padding: 12px 20px;
+            font-family: 'Lora', serif;
+            transition: var(--transition);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .filter-dropdown .btn:hover {
+            border-color: var(--sage-green);
+            box-shadow: 0 4px 15px rgba(138, 155, 104, 0.2);
+        }
+        
+        .dropdown-menu {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 10px 0;
+            border-top: 3px solid var(--warm-clay);
+        }
+        
+        .dropdown-item {
+            padding: 8px 20px;
+            font-family: 'Lora', serif;
+            color: #555;
+            transition: var(--transition);
+        }
+        
+        .dropdown-item:hover {
+            background: rgba(138, 155, 104, 0.1);
+            color: var(--deep-sage);
+        }
+        
+        /* Appointments Grid */
+        .appointments-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 25px;
-            margin-top: 20px;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .appointments-grid {
+                grid-template-columns: 1fr;
+            }
         }
         
         .appointment-card {
-            position: relative;
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
             padding: 25px;
             box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            border-top: 4px solid var(--accent-blue);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(138, 155, 104, 0.1);
+            animation: cardEntrance 0.6s ease-out;
+            animation-fill-mode: backwards;
+        }
+        
+        .appointment-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background: linear-gradient(90deg, var(--sage-green), var(--warm-clay));
         }
         
         .appointment-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(45, 93, 138, 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
         }
         
         .appointment-card.expired {
-            background-color: #f5f5f5;
+            background-color: rgba(245, 239, 230, 0.7);
         }
         
         .appointment-card.expired::before {
+            background: linear-gradient(90deg, #cccccc, #999999);
+        }
+        
+        .appointment-card.expired::after {
             content: "EXPIRED";
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg);
+            transform: translate(-50%, -50%) rotate(-15deg);
             font-size: 3rem;
-            color: rgba(145, 168, 208, 0.1);
+            color: rgba(170, 170, 170, 0.2);
             font-weight: 900;
             pointer-events: none;
             z-index: 1;
+            font-family: 'Playfair Display', serif;
         }
         
         .card-header {
@@ -145,259 +451,405 @@
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 1px dashed var(--light-blue);
+            border-bottom: 1px dashed rgba(138, 155, 104, 0.3);
         }
         
-        .card-header strong {
+        .client-name {
+            font-family: 'Playfair Display', serif;
             font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--dark-blue);
+            color: var(--deep-sage);
+            margin: 0;
         }
         
         .card-body p {
             margin-bottom: 12px;
-            color: var(--light-blue);
+            color: #666;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
         }
         
         .card-body strong {
-            color: var(--dark-blue);
+            color: var(--deep-sage);
+            min-width: 100px;
             font-weight: 600;
-        }
-        
-        .search-bar {
-            margin-bottom: 25px;
-            display: flex;
-            gap: 12px;
-        }
-        
-        .search-bar input {
-            width: 30px;
-            flex-grow: 0.5;
-            border-radius: 8px;
-            border: 1px solid var(--light-blue);
-            padding: 10px 15px;
-        }
-        
-        .search-bar .btn {
-            border-radius: 8px;
-            font-weight: 500;
-            padding: 10px 20px;
         }
         
         .delete-btn {
             width: 100%;
-            margin-top: 15px;
-            border-radius: 8px;
-            font-weight: 500;
-            padding: 8px;
-            background: linear-gradient(135deg, #E53935, #C62828);
-            border: none;
+            margin-top: 20px;
+            background: linear-gradient(90deg, var(--warm-clay), #b86a4d);
             color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Lora', serif;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(201, 124, 93, 0.2);
+        }
+        
+        .delete-btn:hover {
+            background: linear-gradient(90deg, #b86a4d, var(--warm-clay));
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(201, 124, 93, 0.3);
         }
         
         .no-appointments {
             text-align: center;
-            padding: 40px;
-            color: var(--light-blue);
+            padding: 60px 30px;
+            color: #888;
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
             box-shadow: var(--shadow);
             grid-column: 1 / -1;
+            font-family: 'Playfair Display', serif;
+            border: 1px dashed rgba(138, 155, 104, 0.3);
         }
         
         .no-appointments i {
-            font-size: 3rem;
-            color: var(--accent-blue);
-            margin-bottom: 15px;
+            font-size: 3.5rem;
+            color: var(--warm-clay);
+            margin-bottom: 20px;
+            opacity: 0.7;
         }
         
-        .btn-secondary {
-            background: linear-gradient(135deg, var(--dark-blue), var(--primary-blue));
-            border: none;
-            color: white;
-            font-weight: 500;
-            padding: 8px 20px;
-            border-radius: 8px;
+        .no-appointments h4 {
+            color: var(--deep-sage);
+            margin-bottom: 10px;
         }
-        
-        .btn-secondary:hover {
-            color: white;
-            transform: translateY(-2px);
+
+        /* Success Rate and Rating Styles */
+        .metric-item {
+            grid-column: span 1;
         }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, var(--accent-blue), var(--primary-blue));
-            border: none;
-            color: white;
+
+        @media (max-width: 768px) {
+            .metric-item {
+                grid-column: span 2;
+            }
+        }
+
+        .success-rate-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 8px 0;
+        }
+
+        .success-rate-bar {
+            flex: 1;
+            height: 10px;
+            background: rgba(138, 155, 104, 0.15);
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .success-rate-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--sage-green), var(--deep-sage));
+            border-radius: 5px;
+            width: 0;
+            transition: width 1.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+            position: relative;
+        }
+
+        .success-rate-text {
+            font-weight: 700;
+            color: var(--deep-sage);
+            min-width: 45px;
+            text-align: right;
+            font-size: 1.05rem;
+        }
+
+        .rating-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 8px 0;
+        }
+
+        .rating-stars i {
+            color: var(--warm-clay);
+            font-size: 1.1rem;
+        }
+
+        .rating-text {
             font-weight: 600;
+            color: var(--warm-clay);
+            font-size: 1.05rem;
         }
-        
-        .search-bar .dropdown .btn {
-            background: white;
-            border: 1px solid var(--light-blue);
-            color: var(--dark-blue);
+
+        .metric-description {
+            font-size: 0.8rem;
+            color: #777;
+            margin-top: 4px;
         }
-        
-        .search-bar .dropdown-menu {
-            min-width: 200px;
-            border-radius: 8px;
-            border: none;
-            box-shadow: var(--shadow);
-            border-top: 3px solid var(--accent-blue);
+
+        .metric-description span {
+            font-weight: 600;
+            color: var(--deep-sage);
         }
-        
-        .search-bar .dropdown-item {
-            padding: 8px 16px;
-            color: var(--dark-blue);
+
+        .rating-display {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 15px;
+            background: rgba(245, 239, 230, 0.5);
+            border-radius: 10px;
+            border: 1px solid rgba(201, 124, 93, 0.2);
         }
-        
-        .search-bar .dropdown-item:hover {
-            background-color: var(--pastel-blue);
-            color: var(--dark-blue);
+
+        .rating-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--deep-sage);
+            line-height: 1;
         }
-        
-        .card-icon {
-            color: var(--accent-blue);
-            margin-right: 8px;
-            width: 20px;
-            text-align: center;
+
+        .rating-number {
+            font-size: 2.2rem;
         }
-        
-        .text-center {
+
+        .rating-max {
+            font-size: 1.2rem;
+            color: var(--warm-clay);
+            opacity: 0.8;
+        }
+
+        .rating-stars {
+            color: var(--warm-clay);
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+        }
+
+        .rating-stars .fa-star-half {
+            color: var(--warm-clay);
+        }
+
+        .rating-reviews {
+            font-size: 0.85rem;
+            color: var(--deep-sage);
+            opacity: 0.9;
             text-align: center;
         }
 
-        .card-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
+        .case-status {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            font-size: 0.95rem;
+            margin-top: 8px;
+            color: var(--deep-sage);
         }
-    
-        .appointment-card {
-            animation: fadeInUp 0.6s ease-out;
-            animation-fill-mode: backwards;
+
+        .case-status i {
+            color: var(--warm-clay);
         }
-    
-        @keyframes fadeInUp {
+
+        /* Animations */
+        @keyframes cardEntrance {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
             }
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-    
-        .hidden-card {
-            display: none;
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
-    
-        .pagination-controls {
-            display: flex;
-            justify-content: center;
-            margin-top: 30px;
-            gap: 15px;
-            animation: fadeIn 0.6s ease-out;
-        }
-    
-        .page-btn {
-            background: var(--accent-blue);
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.3s;
-        }
-    
-        .page-btn:hover {
-            background: var(--primary-blue);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(44, 94, 139, 0.2);
-        }
-    
-        .page-btn:disabled {
-            background: var(--light-blue);
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-    
-        .page-info {
-            display: flex;
-            align-items: center;
-            color: var(--dark-blue);
-            font-weight: 500;
+        
+        /* Utility classes */
+        .icon {
+            color: var(--warm-clay);
+            font-size: 1.1rem;
+            min-width: 20px;
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Lora:wght@400;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Background elements -->
+    <div class="watercolor-bg"></div>
+    <div class="floating-elements" id="floatingElements"></div>
+    
     <div class="container">
-        <div class="header">
-            <h2><i class="fas fa-user-tie me-2"></i>Lawyer Profile</h2>
-            <button class="btn btn-secondary" onclick="window.history.back()"><i class="fas fa-arrow-left me-2"></i>Back</button>
+        <!-- Header -->
+        <div class="profile-header">
+            <h1><i class="fas fa-user-tie icon"></i> Lawyer Profile</h1>
+            <button class="back-btn" onclick="window.history.back()"><i class="fas fa-arrow-left"></i> Back</button>
         </div>
         
+        <!-- Profile Section -->
         <div class="profile-section">
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="info-card text-center">
-                        <img id="profilePic" src="https://via.placeholder.com/180" class="profile-pic">
-                        <h3 id="lawyerName"></h3>
-                        <p id="lawyerEmail"></p>
-                        <p><strong><i class="fas fa-id-badge card-icon"></i>Bar Council ID:</strong> <span id="barCouncilID"></span></p>
-                    </div>
+            <!-- Profile Card -->
+            <div class="profile-card">
+                <img id="profilePic" src="https://via.placeholder.com/180" class="profile-pic">
+                <h2 class="profile-name" id="lawyerName"></h2>
+                <p class="profile-email" id="lawyerEmail"></p>
+                <div class="profile-id">
+                    <i class="fas fa-id-badge"></i> <span id="barCouncilID"></span>
                 </div>
-                <div class="col-md-8">
-                    <div class="info-card">
-                        <h4><i class="fas fa-briefcase me-2"></i>Professional Details</h4>
-                        <div class="professional-details">
-                            <p><strong><i class="fas fa-gavel card-icon"></i>Practice Area:</strong> <span id="practiceArea"></span></p>
-                            <p><strong><i class="fas fa-building card-icon"></i>Firm Name:</strong> <span id="firmName"></span></p>
-                            <p><strong><i class="fas fa-users card-icon"></i>Firm Size:</strong> <span id="firmSize"></span></p>
-                            <p><strong><i class="fas fa-user-tag card-icon"></i>Designation:</strong> <span id="designation"></span></p>
-                            <p><strong><i class="fas fa-clock card-icon"></i>Experience:</strong> <span id="experience"></span> years</p>
-                            <p><strong><i class="fas fa-folder-open card-icon"></i>Total Cases:</strong> <span id="totalCases"></span></p>
-                            <p><strong><i class="fas fa-trophy card-icon"></i>Successful Cases:</strong> <span id="successfulCases"></span></p>
-                            <p><strong><i class="fas fa-rupee-sign card-icon"></i>Fees per Hearing:</strong> ₹<span id="fees"></span></p>
-                            <p><strong><i class="fas fa-map-marker-alt card-icon"></i>Location:</strong> <span id="location"></span></p>
-                            <p><strong><i class="fas fa-phone card-icon"></i>Contact:</strong> <span id="contact"></span></p>
+                <div class="case-status">
+                    <span><i class="fas fa-briefcase icon"></i> Active: <strong id="activeCases">0</strong></span>
+                    <span><i class="fas fa-archive icon"></i> Expired: <strong id="expiredCases">0</strong></span>
+                </div>
+            </div>
+            
+            <!-- Details Card -->
+            <div class="details-card">
+                <h3 class="section-title"><i class="fas fa-briefcase icon"></i> Professional Details</h3>
+                <div class="details-grid">
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-gavel icon"></i> Practice Area</div>
+                        <div class="detail-value" id="practiceArea"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-building icon"></i> Firm Name</div>
+                        <div class="detail-value" id="firmName"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-users icon"></i> Firm Size</div>
+                        <div class="detail-value" id="firmSize"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-user-tag icon"></i> Designation</div>
+                        <div class="detail-value" id="designation"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-clock icon"></i> Experience</div>
+                        <div class="detail-value" id="experience"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-folder-open icon"></i> Total Cases</div>
+                        <div class="detail-value" id="totalCases"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-trophy icon"></i> Successful Cases</div>
+                        <div class="detail-value" id="successfulCases"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-rupee-sign icon"></i> Fees per Hearing</div>
+                        <div class="detail-value">₹<span id="fees"></span></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-map-marker-alt icon"></i> Location</div>
+                        <div class="detail-value" id="location"></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label"><i class="fas fa-phone icon"></i> Contact</div>
+                        <div class="detail-value" id="contact"></div>
+                    </div>
+
+                    <div class="detail-item metric-item">
+                        <div class="detail-label"><i class="fas fa-chart-line icon"></i> Success Rate</div>
+                        <div class="detail-value">
+                            <div class="success-rate-container">
+                                <div class="success-rate-bar">
+                                    <div class="success-rate-fill" id="successRateFill"></div>
+                                </div>
+                                <span class="success-rate-text" id="successRateText">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-item metric-item">
+                        <div class="detail-label"><i class="fas fa-star icon"></i> Client Rating</div>
+                        <div class="detail-value">
+                            <div class="rating-container">
+                                <div class="rating-stars" id="ratingStars">
+                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                    <i class="far fa-star"></i>
+                                </div>
+                                <span class="rating-text" id="ratingText">0.0/5.0</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
         
+        <!-- Appointments Section -->
         <div class="appointments-section">
-            <h4><i class="fas fa-calendar-alt me-2"></i>Appointments</h4>
-            <div class="search-bar">
-                <input type="text" id="appointmentSearch" class="form-control" placeholder="Search appointments...">
-                <button class="btn btn-primary" onclick="searchAppointments()"><i class="fas fa-search me-2"></i>Search</button>
-                <div class="dropdown">
-                    <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-filter me-2"></i>Filter
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="filterDropdown">
-                        <li><a class="dropdown-item" href="#" onclick="sortAppointments('dateRecent')"><i class="fas fa-sort-amount-down me-2"></i>Date (Recent First)</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="sortAppointments('dateOldest')"><i class="fas fa-sort-amount-up me-2"></i>Date (Oldest First)</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="sortAppointments('nameAsc')"><i class="fas fa-sort-alpha-down me-2"></i>Client Name (A-Z)</a></li>
-                        <li><a class="dropdown-item" href="#" onclick="sortAppointments('nameDesc')"><i class="fas fa-sort-alpha-up me-2"></i>Client Name (Z-A)</a></li>
-                    </ul>
+            <div class="appointments-header">
+                <h3 class="section-title"><i class="fas fa-calendar-alt icon"></i> Appointments</h3>
+                <div class="search-container">
+                    <input type="text" id="appointmentSearch" class="search-input" placeholder="Search appointments...">
+                    <button class="search-btn" onclick="searchAppointments()"><i class="fas fa-search"></i> Search</button>
+                    <div class="dropdown filter-dropdown">
+                        <button class="btn dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-filter"></i> Filter
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                            <li><a class="dropdown-item" href="#" onclick="sortAppointments('dateRecent')"><i class="fas fa-sort-amount-down me-2"></i>Date (Recent First)</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sortAppointments('dateOldest')"><i class="fas fa-sort-amount-up me-2"></i>Date (Oldest First)</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sortAppointments('nameAsc')"><i class="fas fa-sort-alpha-down me-2"></i>Client Name (A-Z)</a></li>
+                            <li><a class="dropdown-item" href="#" onclick="sortAppointments('nameDesc')"><i class="fas fa-sort-alpha-up me-2"></i>Client Name (Z-A)</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             
-            <div class="card-container" id="appointmentsContainer">
-                <!-- Appointments will be loaded here in card format -->
+            <div class="appointments-grid" id="appointmentsContainer">
+                <!-- Appointments will be loaded here -->
             </div>
         </div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
+        // Create floating leaf elements
+        function createFloatingElements() {
+            const container = document.getElementById('floatingElements');
+            const leafCount = 12;
+            
+            for (let i = 0; i < leafCount; i++) {
+                const leaf = document.createElement('div');
+                leaf.classList.add('floating-leaf');
+                
+                // Random size between 30px and 80px
+                const size = Math.random() * 50 + 30;
+                leaf.style.width = `${size}px`;
+                leaf.style.height = `${size}px`;
+                
+                // Random position
+                leaf.style.left = `${Math.random() * 100}%`;
+                leaf.style.top = `${Math.random() * 100}%`;
+                
+                // Random animation duration and delay
+                leaf.style.animationDuration = `${Math.random() * 15 + 10}s`;
+                leaf.style.animationDelay = `${Math.random() * 5}s`;
+                
+                container.appendChild(leaf);
+            }
+        }
+        
         const lawyerId = window.location.pathname.split('/').pop();
         
         $(document).ready(function() {
+            createFloatingElements();
             loadLawyerProfile();
             loadAppointments();
         });
@@ -406,6 +858,11 @@
             const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
             const date = new Date(dateString);
             return days[date.getDay()];
+        }
+        
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
         }
         
         function loadLawyerProfile() {
@@ -422,12 +879,36 @@
                 $("#firmName").text(profile.Firm_name || 'N/A');
                 $("#firmSize").text(profile.Firm_size || 'N/A');
                 $("#designation").text(profile.Designation || 'N/A');
-                $("#experience").text(profile.Years_of_Experience || 'N/A');
-                $("#totalCases").text(profile.Total_cases || 'N/A');
-                $("#successfulCases").text(profile.Successful_cases || 'N/A');
+                $("#experience").text((profile.Years_of_Experience || 'N/A') + ' years');
+                
+                // Cases and Metrics
+                const totalCases = parseInt(profile.Total_cases) || 0;
+                const successfulCases = parseInt(profile.Successful_cases) || 0;
+                
+                $("#totalCases").text(totalCases || 'N/A');
+                $("#successfulCases").text(successfulCases || 'N/A');
                 $("#fees").text(profile.Nominal_fees_per_hearing || 'N/A');
                 $("#location").text(profile.Location || 'N/A');
                 $("#contact").text(profile.contact || 'N/A');
+                
+                // Calculate success rate percentage
+                const successRate = totalCases > 0 ? Math.round((successfulCases / totalCases) * 100) : 0;
+                
+                // Convert success rate to star rating (0–5)
+                const rating = (successRate / 100) * 5; // e.g., 80% → 4.0 stars
+                
+                // Update metrics display
+                $("#casesCount").text(totalCases);
+                
+                // Animate success rate and update rating stars
+                setTimeout(() => {
+                    $("#successRateFill").css('width', successRate + '%');
+                    $("#successRateText").text(successRate + '%');
+                    
+                    // Update rating display
+                    $("#ratingText").text(rating.toFixed(1) + '/5.0');
+                    updateStarRating(rating.toFixed(1));
+                }, 300);
                 
                 // Profile Picture
                 if (profile.profilePicUrl) {
@@ -438,7 +919,31 @@
                 alert("Failed to load lawyer profile");
             });
         }
-        
+
+
+        function updateStarRating(rating) {
+            const stars = $("#ratingStars i");
+            const numericRating = parseFloat(rating);
+            
+            stars.each(function(index) {
+                if (index < Math.floor(numericRating)) {
+                    $(this).addClass('fas').removeClass('far');
+                } else {
+                    $(this).addClass('far').removeClass('fas');
+                }
+                
+                // Handle partial star
+                if (index === Math.floor(numericRating)) {
+                    const remainder = numericRating - Math.floor(numericRating);
+                    if (remainder >= 0.75) {
+                        $(this).addClass('fas').removeClass('far');
+                    } else if (remainder >= 0.25) {
+                        $(this).addClass('fa-star-half').removeClass('far', 'fas');
+                    }
+                }
+            });
+        }
+
         function loadAppointments(searchTerm = '') {
             $.get(`/api/lawyer_appointments/${lawyerId}?search=${searchTerm}`, function(data) {
                 const container = $("#appointmentsContainer");
@@ -447,38 +952,54 @@
                 if (data.appointments.length === 0) {
                     container.html(`
                         <div class="no-appointments">
-                            <p>No appointments found</p>
+                            <i class="fas fa-calendar-times"></i>
+                            <h4>No Appointments Found</h4>
+                            <p>There are currently no appointments scheduled</p>
                         </div>
                     `);
+                    // Reset counters when no appointments
+                    $("#activeCases").text("0");
+                    $("#expiredCases").text("0");
                     return;
                 }
                 
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
                 
+                // Initialize counters
+                let activeCount = 0;
+                let expiredCount = 0;
+                
                 // Sort appointments by date (most recent first)
                 data.appointments.sort((a, b) => {
                     return new Date(b.appointment_date) - new Date(a.appointment_date);
                 });
                 
-                data.appointments.forEach(appt => {
+                data.appointments.forEach((appt, index) => {
                     const appointmentDate = new Date(appt.appointment_date);
                     appointmentDate.setHours(0, 0, 0, 0);
                     const isExpired = appointmentDate < today;
                     
+                    // Update counters
+                    if (isExpired) {
+                        expiredCount++;
+                    } else {
+                        activeCount++;
+                    }
+                    
                     const card = $(`
-                        <div class="appointment-card ${isExpired ? 'expired' : ''}">
+                        <div class="appointment-card ${isExpired ? 'expired' : ''}" style="animation-delay: ${index * 0.1}s">
                             <div class="card-header">
-                                <strong>${appt.client_name}</strong>
+                                <h4 class="client-name">${appt.client_name}</h4>
                             </div>
                             <div class="card-body">
-                                <p><strong>Email:</strong> ${appt.client_email}</p>
-                                <p><strong>Date:</strong> ${appt.appointment_date} (${getDayOfWeek(appt.appointment_date)})</p>
-                                <p><strong>Time:</strong> ${appt.appointment_time}</p>
-                                <p><strong>Case Details:</strong> ${appt.case_details}</p>
-                                <button class="btn btn-danger btn-sm delete-btn" 
+                                <p><strong><i class="fas fa-envelope icon"></i> Email</strong> ${appt.client_email}</p>
+                                <p><strong><i class="fas fa-calendar-day icon"></i> Date</strong> ${formatDate(appt.appointment_date)} (${getDayOfWeek(appt.appointment_date)})</p>
+                                <p><strong><i class="fas fa-clock icon"></i> Time</strong> ${appt.appointment_time}</p>
+                                <p><strong><i class="fas fa-file-alt icon"></i> Case Details</strong> ${appt.case_details}</p>
+                                <button class="delete-btn" 
                                     onclick="deleteAppointment('${appt.id}', '${appt.client_email.replace(/'/g, "\\'")}')">
-                                    Delete Appointment
+                                    <i class="fas fa-trash-alt"></i> Delete Appointment
                                 </button>
                             </div>
                         </div>
@@ -486,6 +1007,11 @@
                     
                     container.append(card);
                 });
+                
+                // Update the counters in the profile section
+                $("#activeCases").text(activeCount);
+                $("#expiredCases").text(expiredCount);
+                
             }).fail(function(error) {
                 console.error("Error loading appointments:", error);
                 alert("Failed to load appointments");
@@ -516,6 +1042,34 @@
         function searchAppointments() {
             const searchTerm = $("#appointmentSearch").val();
             loadAppointments(searchTerm);
+        }
+        
+        function sortAppointments(sortType) {
+            const container = $("#appointmentsContainer");
+            const cards = container.find(".appointment-card").get();
+            
+            cards.sort((a, b) => {
+                const aClient = $(a).find(".client-name").text().toLowerCase();
+                const bClient = $(b).find(".client-name").text().toLowerCase();
+                const aDate = new Date($(a).find("p:nth-child(2)").text().split(" (")[0]);
+                const bDate = new Date($(b).find("p:nth-child(2)").text().split(" (")[0]);
+                
+                switch(sortType) {
+                    case 'dateRecent':
+                        return bDate - aDate;
+                    case 'dateOldest':
+                        return aDate - bDate;
+                    case 'nameAsc':
+                        return aClient.localeCompare(bClient);
+                    case 'nameDesc':
+                        return bClient.localeCompare(aClient);
+                    default:
+                        return 0;
+                }
+            });
+            
+            container.empty();
+            cards.forEach(card => container.append(card));
         }
     </script>
 </body>

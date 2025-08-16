@@ -9,34 +9,127 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <style>
         :root {
-            --primary-blue: #5D8AA8;
-            --light-blue: #91A8D0;
-            --pastel-blue: #E6F2FF;
-            --accent-blue: #4B9CD3;
-            --dark-blue: #2C5E8B;
-            --shadow: 0 4px 20px rgba(45, 93, 138, 0.15);
+            --forest-green: #2A4D3A;
+            --sage-green: #6B8E4E;
+            --mint-green: #A4C3A2;
+            --light-beige: #F5F0E6;
+            --warm-beige: #E8DCC5;
+            --gold: #C8B273;
+            --dark-gold: #A89562;
+            --shadow: 0 4px 20px rgba(42, 77, 58, 0.1);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         
         body {
-            background: var(--pastel-blue);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--dark-blue);
+            background: var(--light-beige);
+            font-family: 'Playfair Display', serif;
+            color: var(--forest-green);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background elements */
+        body::before, body::after {
+            content: '';
+            position: fixed;
+            z-index: -1;
+            opacity: 0.08;
+            filter: blur(10px);
+        }
+
+        body::before {
+            top: -100px;
+            right: -100px;
+            width: 300px;
+            height: 300px;
+            background: var(--sage-green);
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            animation: float 15s infinite ease-in-out;
+        }
+
+        body::after {
+            bottom: -150px;
+            left: -150px;
+            width: 400px;
+            height: 400px;
+            background: var(--gold);
+            border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+            animation: float 18s infinite ease-in-out reverse;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(50px, 50px) rotate(180deg); }
+            100% { transform: translate(0, 0) rotate(360deg); }
+        }
+
+        /* Decorative elements */
+        .decorative-corner {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath fill='%236B8E4E' d='M100,0 L0,100 L0,80 C20,60 40,80 60,60 C80,40 60,20 80,0 L100,0 Z'/%3E%3C/svg%3E") no-repeat;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .decorative-corner.top-left {
+            top: 0;
+            left: 0;
+            transform: rotate(0deg);
+        }
+
+        .decorative-corner.top-right {
+            top: 0;
+            right: 0;
+            transform: rotate(90deg);
+        }
+
+        .decorative-corner.bottom-left {
+            bottom: 0;
+            left: 0;
+            transform: rotate(270deg);
+        }
+
+        .decorative-corner.bottom-right {
+            bottom: 0;
+            right: 0;
+            transform: rotate(180deg);
         }
         
         .container {
             margin-top: 30px;
             max-width: 95%;
+            position: relative;
         }
         
         /* Header */
         .dashboard-header {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
+            background: linear-gradient(135deg, var(--warm-beige), var(--light-beige));
+            padding: 25px 30px;
+            border-radius: 16px;
             box-shadow: var(--shadow);
             margin-bottom: 30px;
-            border-bottom: 3px solid var(--accent-blue);
+            border-left: 5px solid var(--sage-green);
             animation: fadeInDown 0.6s ease-out;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(168, 149, 98, 0.2);
+        }
+
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(107, 142, 78, 0.1));
+            transform: skewX(-20deg);
         }
         
         @keyframes fadeInDown {
@@ -50,31 +143,126 @@
             }
         }
         
+        /* Add this to your existing CSS */
+        #next-appointment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-size: 1.4rem; /* Reduced from 2.5rem */
+        }
+
+        #next-appointment i {
+            font-size: 1rem;
+            margin: 0px;
+        }
+
+        #next-appointment-text {
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+
         .dashboard-title {
-            color: var(--dark-blue);
+            color: var(--forest-green);
             font-weight: 700;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            font-family: 'Playfair Display', serif;
+            letter-spacing: 0.5px;
+            position: relative;
+            display: inline-block;
+            margin: 0;
+        }
+
+        .dashboard-title::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50%;
+            height: 2px;
+            background: var(--sage-green);
+            transition: var(--transition);
+        }
+
+        .dashboard-title:hover::after {
+            width: 100%;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--warm-beige), var(--light-beige));
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            text-align: center;
+            border-top: 4px solid var(--sage-green);
+            animation: fadeIn 0.6s ease-out;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(168, 149, 98, 0.2);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(42, 77, 58, 0.15);
+            background: linear-gradient(135deg, var(--light-beige), var(--warm-beige));
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--forest-green);
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            color: var(--sage-green);
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .stat-icon {
+            font-size: 1.8rem;
+            color: var(--sage-green);
+            margin-bottom: 10px;
         }
         
         /* Cards */
         .card-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 25px;
             margin-top: 20px;
         }
         
         .user-card, .lawyer-card {
-            background: white;
+            background: linear-gradient(135deg, var(--warm-beige), var(--light-beige));
             border-radius: 12px;
             padding: 25px;
             box-shadow: var(--shadow);
-            transition: all 0.3s ease;
-            border-top: 4px solid var(--accent-blue);
+            transition: var(--transition);
             position: relative;
             overflow: hidden;
             animation: cardEntrance 0.6s ease-out;
             animation-fill-mode: backwards;
+            border: 1px solid rgba(168, 149, 98, 0.2);
+            backdrop-filter: blur(5px);
+        }
+
+        .user-card::before, .lawyer-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--sage-green), var(--forest-green));
         }
         
         @keyframes cardEntrance {
@@ -90,17 +278,8 @@
         
         .user-card:hover, .lawyer-card:hover {
             transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 10px 25px rgba(45, 93, 138, 0.2);
-        }
-        
-        .user-card::before, .lawyer-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, var(--accent-blue), var(--primary-blue));
+            box-shadow: 0 10px 25px rgba(42, 77, 58, 0.15);
+            border-color: var(--sage-green);
         }
         
         .card-header {
@@ -109,14 +288,15 @@
             align-items: center;
             margin-bottom: 20px;
             padding-bottom: 15px;
-            border-bottom: 1px dashed var(--light-blue);
+            border-bottom: 1px dashed var(--sage-green);
         }
         
         .card-header h5 {
             margin: 0;
             font-size: 1.3rem;
             font-weight: 600;
-            color: var(--dark-blue);
+            color: var(--forest-green);
+            font-family: 'Playfair Display', serif;
         }
         
         .badge {
@@ -126,26 +306,27 @@
             border-radius: 20px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            font-family: 'Montserrat', sans-serif;
         }
         
         .badge-pending {
-            background: linear-gradient(135deg, #91A8D0, #5D8AA8);
-            color: white;
+            background: linear-gradient(135deg, var(--forest-green), var(--sage-green));
+            color: var(--light-beige);
         }
         
         .badge-approved {
-            background: linear-gradient(135deg, #4CAF50, #2E7D32);
-            color: white;
+            background: linear-gradient(135deg, var(--gold), var(--dark-gold));
+            color: var(--forest-green);
         }
         
         .card-body p {
             margin-bottom: 10px;
-            color: var(--light-blue);
+            color: var(--sage-green);
             font-size: 0.95rem;
         }
         
         .card-body strong {
-            color: var(--dark-blue);
+            color: var(--forest-green);
             font-weight: 600;
         }
         
@@ -161,40 +342,58 @@
             min-width: 100px;
             border-radius: 8px;
             font-weight: 500;
-            transition: all 0.2s;
+            transition: var(--transition);
+            font-family: 'Montserrat', sans-serif;
+            border: none;
         }
         
         .btn-approve {
-            background: linear-gradient(135deg, var(--accent-blue), var(--primary-blue));
-            border: none;
-            color: white;
+            background: linear-gradient(135deg, var(--sage-green), var(--forest-green));
+            color: var(--light-beige);
+        }
+
+        .btn-approve:hover {
+            background: linear-gradient(135deg, var(--forest-green), var(--sage-green));
+            color: var(--light-beige);
         }
         
         .btn-danger {
-            background: linear-gradient(135deg, #E53935, #C62828);
-            border: none;
+            background: linear-gradient(135deg, #8B3A3A, #6B2A2A);
+            color: var(--light-beige);
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #6B2A2A, #8B3A3A);
+            color: var(--light-beige);
         }
         
         .btn-info {
-            background: linear-gradient(135deg, #26C6DA, #00ACC1);
-            border: none;
+            background: linear-gradient(135deg, var(--warm-beige), #D9C7A7);
+            color: var(--forest-green);
+            border: 1px solid var(--sage-green);
+        }
+
+        .btn-info:hover {
+            background: linear-gradient(135deg, #D9C7A7, var(--warm-beige));
+            color: var(--forest-green);
         }
         
         /* Section Headers */
         .section-header {
             margin: 40px 0 20px 0;
             padding-bottom: 10px;
-            border-bottom: 2px solid var(--accent-blue);
-            color: var(--dark-blue);
+            border-bottom: 2px solid var(--sage-green);
+            color: var(--forest-green);
             font-weight: 600;
             font-size: 1.5rem;
             position: relative;
             animation: fadeIn 0.8s ease-out;
+            font-family: 'Playfair Display', serif;
         }
         
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
         
         .section-header::after {
@@ -204,63 +403,97 @@
             left: 0;
             width: 100px;
             height: 3px;
-            background: var(--dark-blue);
+            background: var(--gold);
+        }
+
+        .section-header i {
+            color: var(--sage-green);
+            margin-right: 10px;
         }
         
         /* Tabs */
         .nav-tabs {
-            border-bottom: 2px solid var(--light-blue);
+            border-bottom: 2px solid var(--warm-beige);
             margin-bottom: 30px;
         }
         
         .nav-tabs .nav-link {
-            color: var(--light-blue);
+            color: var(--sage-green);
             font-weight: 500;
             border: none;
             padding: 12px 25px;
             margin-right: 5px;
-            transition: all 0.3s;
+            transition: var(--transition);
+            font-family: 'Montserrat', sans-serif;
+            border-radius: 8px 8px 0 0;
+            background: transparent;
+            position: relative;
         }
         
         .nav-tabs .nav-link.active {
-            color: var(--dark-blue);
+            color: var(--forest-green);
             font-weight: 600;
-            background: var(--accent-blue);
-            border-bottom: 3px solid var(--accent-blue);
+            background: linear-gradient(to bottom, var(--warm-beige), var(--light-beige));
+            border-bottom: 3px solid var(--sage-green);
+        }
+
+        .nav-tabs .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: var(--sage-green);
+            transition: var(--transition);
+        }
+
+        .nav-tabs .nav-link:hover::after {
+            width: 100%;
         }
         
         /* Modal Styles */
         .modal-content {
             border-radius: 12px;
             border: none;
-            box-shadow: 0 10px 30px rgba(45, 93, 138, 0.2);
-            border-top: 4px solid var(--accent-blue);
+            box-shadow: 0 10px 30px rgba(42, 77, 58, 0.15);
+            border-top: 4px solid var(--sage-green);
             width: 30%;
             top: 40%;
             left: 35%;
             animation: modalEntrance 0.4s ease-out;
+            background: linear-gradient(135deg, var(--warm-beige), var(--light-beige));
+            color: var(--forest-green);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(168, 149, 98, 0.2);
         }
         
         @keyframes modalEntrance {
             from {
                 opacity: 0;
-                transform: translateY(-20px);
+                transform: translateY(-20px) scale(0.9);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
             }
         }
         
         .modal-header {
-            border-bottom: 1px dashed var(--light-blue);
-            background: var(--pastel-blue);
+            border-bottom: 1px dashed var(--sage-green);
+            background: linear-gradient(135deg, var(--warm-beige), var(--light-beige));
             border-radius: 12px 12px 0 0;
         }
         
         .modal-title {
-            color: var(--dark-blue);
+            color: var(--forest-green);
             font-weight: 600;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .modal-title i {
+            color: var(--sage-green);
+            margin-right: 10px;
         }
         
         /* Login Overlay */
@@ -270,7 +503,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(230, 242, 255, 0.9);
+            background-color: rgba(245, 240, 230, 0.9);
             backdrop-filter: blur(5px);
             z-index: 999;
             display: none;
@@ -279,7 +512,7 @@
         
         /* Icons */
         .card-icon {
-            color: var(--accent-blue);
+            color: var(--sage-green);
             margin-right: 8px;
             width: 20px;
             text-align: center;
@@ -287,49 +520,69 @@
         }
         
         .btn:hover .card-icon {
-            transform: translateX(3px);
+            transform: translateX(3px) rotate(10deg);
         }
         
         /* Logout Button */
         .btn-logout {
-            background: linear-gradient(135deg, var(--dark-blue), var(--primary-blue));
+            background: linear-gradient(135deg, var(--forest-green), var(--sage-green));
             border: none;
-            color: white;
+            color: var(--light-beige);
             font-weight: 500;
             padding: 8px 20px;
             border-radius: 8px;
-            transition: all 0.3s;
+            transition: var(--transition);
+            font-family: 'Montserrat', sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-logout::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: var(--transition);
+        }
+
+        .btn-logout:hover::before {
+            left: 100%;
         }
         
         .btn-logout:hover {
-            color: white;
+            color: var(--light-beige);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(44, 94, 139, 0.2);
+            box-shadow: 0 4px 8px rgba(42, 77, 58, 0.15);
         }
         
         /* Empty State */
         .empty-state {
             text-align: center;
             padding: 40px;
-            color: var(--light-blue);
-            background: white;
+            color: var(--sage-green);
+            background: linear-gradient(135deg, var(--warm-beige), var(--light-beige));
             border-radius: 12px;
             box-shadow: var(--shadow);
             animation: fadeIn 0.8s ease-out;
             grid-column: 1 / -1;
+            border: 1px dashed var(--sage-green);
+            backdrop-filter: blur(5px);
         }
         
         .empty-state i {
             font-size: 3rem;
-            color: var(--accent-blue);
+            color: var(--sage-green);
             margin-bottom: 15px;
             animation: pulse 2s infinite;
         }
         
         @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
         }
         
         /* Pagination Controls */
@@ -342,35 +595,38 @@
         }
         
         .page-btn {
-            background: var(--accent-blue);
-            color: white;
+            background: var(--sage-green);
+            color: var(--light-beige);
             border: none;
             padding: 8px 20px;
             border-radius: 8px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: var(--transition);
+            font-family: 'Montserrat', sans-serif;
         }
         
         .page-btn:hover {
-            background: var(--primary-blue);
+            background: var(--forest-green);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(44, 94, 139, 0.2);
+            box-shadow: 0 4px 8px rgba(42, 77, 58, 0.15);
         }
         
         .page-btn:disabled {
-            background: var(--light-blue);
+            background: var(--warm-beige);
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
             opacity: 0.7;
+            color: var(--sage-green);
         }
         
         .page-info {
             display: flex;
             align-items: center;
             font-weight: 500;
-            color: var(--dark-blue);
+            color: var(--forest-green);
+            font-family: 'Montserrat', sans-serif;
         }
         
         /* Hidden cards */
@@ -380,8 +636,8 @@
         }
         
         @keyframes fadeOut {
-            from { opacity: 1; }
-            to { opacity: 0; }
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.9); }
         }
         
         /* Loading Animation */
@@ -389,9 +645,9 @@
             display: inline-block;
             width: 40px;
             height: 40px;
-            border: 4px solid rgba(91, 168, 208, 0.3);
+            border: 4px solid rgba(107, 142, 78, 0.3);
             border-radius: 50%;
-            border-top-color: var(--accent-blue);
+            border-top-color: var(--sage-green);
             animation: spin 1s ease-in-out infinite;
             margin: 20px auto;
         }
@@ -400,89 +656,376 @@
             to { transform: rotate(360deg); }
         }
 
-        @keyframes staggeredCardEntrance {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-    
-        /* Update the cardEntrance animation */
-        @keyframes cardEntrance {
-            from {
-                opacity: 0;
-                transform: scale(0.9) translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-    
-        /* Add this new animation for the pagination */
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Add these to the existing styles */
-        .user-card, .lawyer-card {
-            padding: 15px; /* Reduced from 25px */
-            min-height: 220px; /* Added fixed height */
-        }
-    
-        .card-container {
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); /* Reduced from 320px */
-        }
-    
         /* Search bar styles */
         .admin-search-container {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
             align-items: center;
+            background: var(--warm-beige);
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(168, 149, 98, 0.2);
+            backdrop-filter: blur(5px);
         }
     
         .admin-search-container input {
             flex-grow: 1;
             max-width: 300px;
             border-radius: 8px;
-            padding: 8px 15px;
+            padding: 10px 15px;
+            border: 1px solid var(--warm-beige);
+            background: var(--light-beige);
+            color: var(--forest-green);
+            transition: var(--transition);
+        }
+
+        .admin-search-container input:focus {
+            border-color: var(--sage-green);
+            box-shadow: 0 0 0 3px rgba(107, 142, 78, 0.2);
+            outline: none;
+        }
+    
+        .admin-search-container .btn-primary {
+            background: linear-gradient(135deg, var(--forest-green), var(--sage-green));
+            border: none;
+            transition: var(--transition);
+            color: var(--light-beige);
+        }
+
+        .admin-search-container .btn-primary:hover {
+            background: linear-gradient(135deg, var(--sage-green), var(--forest-green));
+            transform: translateY(-2px);
         }
     
         .admin-search-container .dropdown-toggle {
-            padding: 8px 15px;
+            padding: 10px 15px;
+            background: var(--light-beige);
+            color: var(--forest-green);
+            border: 1px solid var(--warm-beige);
+            transition: var(--transition);
+        }
+
+        .admin-search-container .dropdown-toggle:hover {
+            background: var(--warm-beige);
+            border-color: var(--sage-green);
         }
     
         /* New registration highlight */
         .new-registration {
-            border: 2px solid var(--accent-blue);
+            border: 2px solid var(--sage-green);
             animation: pulseHighlight 2s ease-in-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .new-registration::after {
+            content: 'New';
+            position: absolute;
+            top: 10px;
+            right: -25px;
+            background: var(--sage-green);
+            color: var(--light-beige);
+            padding: 3px 30px;
+            transform: rotate(45deg);
+            font-size: 0.7rem;
+            font-weight: bold;
         }
     
         /* Filter dropdown styles */
         .filter-dropdown .dropdown-menu {
             min-width: 200px;
             padding: 10px;
+            background: var(--light-beige);
+            border: 1px solid var(--warm-beige);
+            box-shadow: var(--shadow);
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
         }
     
         .filter-dropdown .dropdown-item {
             padding: 8px 12px;
             border-radius: 4px;
             margin: 2px 0;
+            color: var(--forest-green);
+            transition: var(--transition);
+        }
+
+        .filter-dropdown .dropdown-item:hover {
+            background: var(--warm-beige);
+            color: var(--forest-green);
+        }
+
+        .filter-dropdown .dropdown-item i {
+            color: var(--sage-green);
+            margin-right: 8px;
+            width: 16px;
+            text-align: center;
+        }
+
+        /* Additional style for appointment card */
+        .appointment-card {
+            background: linear-gradient(135deg, var(--warm-beige), var(--light-beige));
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--sage-green);
+            margin-top: 10px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(168, 149, 98, 0.2);
+        }
+        
+        .appointment-card p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        
+        .appointment-card .appointment-title {
+            font-weight: 600;
+            color: var(--forest-green);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .appointment-card .appointment-title i {
+            margin-right: 8px;
+            color: var(--sage-green);
+        }
+
+        /* Floating decorative elements */
+        .floating-element {
+            position: fixed;
+            opacity: 0.1;
+            z-index: -1;
+            animation: float 20s infinite linear;
+        }
+
+        .floating-element.gold {
+            color: var(--gold);
+        }
+
+        .floating-element.green {
+            color: var(--sage-green);
+        }
+
+        /* Add these to body */
+        .floating-element.top-left {
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .floating-element.top-right {
+            top: 15%;
+            right: 5%;
+            animation-delay: 2s;
+        }
+
+        .floating-element.bottom-left {
+            bottom: 10%;
+            left: 5%;
+            animation-delay: 4s;
+        }
+
+        .floating-element.bottom-right {
+            bottom: 15%;
+            right: 5%;
+            animation-delay: 6s;
+        }
+        
+        /* Quick stats */
+        .quick-stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+        
+        /* Recent activity */
+        .recent-activity {
+            background: linear-gradient(135deg, var(--warm-beige), var(--light-beige));
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 30px;
+            border-left: 4px solid var(--sage-green);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(168, 149, 98, 0.2);
+        }
+        
+        .activity-item {
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--sage-green);
+            display: flex;
+            align-items: center;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            font-size: 1.2rem;
+            color: var(--sage-green);
+            margin-right: 15px;
+            min-width: 20px;
+        }
+        
+        .activity-text {
+            flex-grow: 1;
+        }
+        
+        .activity-time {
+            color: var(--sage-green);
+            font-size: 0.85rem;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Floating leaves animation */
+        @keyframes falling {
+            0% {
+                top: -10%;
+                transform: translateX(0) rotate(0deg);
+            }
+            100% {
+                top: 100%;
+                transform: translateX(100px) rotate(360deg);
+            }
+        }
+
+        .falling-leaves {
+            position: fixed;
+            top: -10%;
+            z-index: -1;
+            opacity: 0.1;
+            animation: falling 15s linear infinite;
+        }
+
+        .leaf-1 {
+            left: 5%;
+            animation-delay: 0s;
+            font-size: 30px;
+        }
+
+        .leaf-2 {
+            left: 15%;
+            animation-delay: 3s;
+            font-size: 40px;
+            animation-duration: 18s;
+        }
+
+        .leaf-3 {
+            left: 25%;
+            animation-delay: 7s;
+            font-size: 25px;
+            animation-duration: 12s;
+        }
+
+        .leaf-4 {
+            left: 35%;
+            animation-delay: 2s;
+            font-size: 35px;
+            animation-duration: 20s;
+        }
+
+        .leaf-5 {
+            left: 45%;
+            animation-delay: 5s;
+            font-size: 30px;
+            animation-duration: 15s;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .card-container {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 80%;
+                left: 10%;
+            }
+
+            .admin-search-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .admin-search-container input {
+                max-width: 100%;
+            }
+            
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Animated floating leaves -->
+    <i class="fas fa-leaf falling-leaves leaf-1 green"></i>
+    <i class="fas fa-leaf falling-leaves leaf-2 green"></i>
+    <i class="fas fa-leaf falling-leaves leaf-3 green"></i>
+    <i class="fas fa-leaf falling-leaves leaf-4 green"></i>
+    <i class="fas fa-leaf falling-leaves leaf-5 green"></i>
+
+    <!-- Decorative floating elements -->
+    <i class="fas fa-leaf floating-element green top-left" style="font-size: 80px;"></i>
+    <i class="fas fa-gavel floating-element gold top-right" style="font-size: 60px;"></i>
+    <i class="fas fa-balance-scale floating-element green bottom-left" style="font-size: 70px;"></i>
+    <i class="fas fa-book floating-element gold bottom-right" style="font-size: 50px;"></i>
+
+    <!-- Decorative corners -->
+    <div class="decorative-corner top-left"></div>
+    <div class="decorative-corner top-right"></div>
+    <div class="decorative-corner bottom-left"></div>
+    <div class="decorative-corner bottom-right"></div>
+
     <div class="container">
-        <div class="dashboard-header d-flex justify-content-between align-items-center">
-            <h1 class="dashboard-title"><i class="fas fa-gavel me-2"></i>Admin Dashboard</h1>
+        <div class="dashboard-header">
+            <div>
+                <h1 class="dashboard-title"><i class="fas fa-gavel me-2"></i>Admin Dashboard</h1>
+                <p class="mb-0 text-muted">Manage users and lawyers</p>
+            </div>
             <button class="btn btn-logout" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i>Logout</button>
         </div>
+        
+        <!-- Stats Cards -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                <div class="stat-value" id="total-users">0</div>
+                <div class="stat-label">Total Users</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-user-tie"></i></div>
+                <div class="stat-value" id="total-lawyers">0</div>
+                <div class="stat-label">Total Lawyers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                <div class="stat-value" id="pending-lawyers">0</div>
+                <div class="stat-label">Pending Approvals</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"></div>
+                <div class="stat-value" id="next-appointment">
+                    <span id="next-appointment-text">-</span>
+                </div>
+                <div class="appointment-card" id="appointment-details" style="display: none;">
+                    <div class="appointment-title"><i class="fas fa-calendar-day me-2"></i>Details</div>
+                    <p><strong>Client:</strong> <span id="appointment-client"></span></p>
+                    <p><strong>Lawyer:</strong> <span id="appointment-lawyer"></span></p>
+                    <p><strong>Council ID:</strong> <span id="appointment-councilid"></span></p>
+                    <p><strong>Time:</strong> <span id="appointment-time"></span></p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Search and Filter -->
         <div class="admin-search-container">
             <input type="text" id="adminSearchInput" class="form-control" placeholder="Search users/lawyers...">
             <button class="btn btn-primary" onclick="searchAdminDashboard()">
@@ -501,20 +1044,6 @@
             </div>
         </div>
 
-        <!-- Admin Login Modal -->
-        <div id="adminLoginModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title"><i class="fas fa-lock me-2"></i>Admin Login</h4>
-                </div>
-                <div class="modal-body">
-                    <input type="text" id="adminUsername" placeholder="Username" class="form-control mb-3">
-                    <input type="password" id="adminPassword" placeholder="Password" class="form-control mb-3">
-                    <button class="btn btn-approve w-100" onclick="login()"><i class="fas fa-sign-in-alt me-2"></i>Login</button>
-                </div>
-            </div>
-        </div>
-
         <!-- Navigation Tabs -->
         <ul class="nav nav-tabs" id="adminTabs" role="tablist">
             <li class="nav-item" role="presentation">
@@ -525,6 +1054,11 @@
             <li class="nav-item" role="presentation">
                 <a class="nav-link" id="users-tab" data-bs-toggle="tab" href="#users" role="tab" aria-controls="users" aria-selected="false">
                     <i class="fas fa-users me-2"></i>Users
+                </a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" id="activity-tab" data-bs-toggle="tab" href="#activity" role="tab" aria-controls="activity" aria-selected="false">
+                    <i class="fas fa-history me-2"></i>Recent Activity
                 </a>
             </li>
         </ul>
@@ -578,6 +1112,35 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Activity Tab -->
+            <div class="tab-pane fade" id="activity" role="tabpanel" aria-labelledby="activity-tab">
+                <div class="container">
+                    <div class="recent-activity">
+                        <h3 class="section-header"><i class="fas fa-history me-2"></i>Recent Activity</h3>
+                        <div id="activity-list">
+                            <div class="activity-item">
+                                <div class="activity-icon"><i class="fas fa-spinner fa-pulse"></i></div>
+                                <div class="activity-text">Loading activity...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Admin Login Modal -->
+        <div id="adminLoginModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title"><i class="fas fa-lock me-2"></i>Admin Login</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="adminUsername" placeholder="Username" class="form-control mb-3">
+                    <input type="password" id="adminPassword" placeholder="Password" class="form-control mb-3">
+                    <button class="btn btn-approve w-100" onclick="login()"><i class="fas fa-sign-in-alt me-2"></i>Login</button>
+                </div>
+            </div>
         </div>
 
         <!-- Approval Modal -->
@@ -612,13 +1175,11 @@
             </div>
         </div>
     </div>
-
     <!-- Bootstrap JS (required for tab functionality) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-
     <script>
-        // All JavaScript functions remain exactly the same as in the previous version
-        // Only the HTML and CSS have been updated for styling
+        // All JavaScript functions remain exactly the same as in the original file
+        // Only the CSS has been modified for the new green/white theme
         let selectedLawyerId = null;
         let selectedLawyerIdForDelete = null;
         let refreshInterval;
@@ -632,7 +1193,7 @@
         
         // Add blur overlay before login
         $('body').append('<div id="login-overlay"></div>');
-    
+
         function checkAdminSession() {
             $('#login-overlay').show();
             $.get("/admin_check", function(response) {
@@ -644,10 +1205,11 @@
                 }
             });
         }
-    
+
         function startAutoRefresh() {
             loadDashboard();
-            refreshInterval = setInterval(loadDashboard, 30000);
+            // Load activity data
+            loadActivityData();
         }
         
         function stopAutoRefresh() {
@@ -655,13 +1217,13 @@
                 clearInterval(refreshInterval);
             }
         }
-    
+
         function login() {
             let data = { 
                 username: $("#adminUsername").val(), 
                 password: $("#adminPassword").val() 
             };
-    
+
             $.ajax({
                 url: "/admin_login",
                 type: "POST",
@@ -677,7 +1239,7 @@
                 }
             });
         }
-    
+
         function logout() {
             stopAutoRefresh();
             $.post("/admin_logout", function() {
@@ -690,7 +1252,7 @@
                 window.close();
             });
         }
-    
+
         function deleteUser(userId) {
             if (confirm("Are you sure you want to delete this user?")) {
                 $.ajax({
@@ -708,7 +1270,7 @@
                 });
             }
         }
-    
+
         function deleteLawyer(lawyerId) {
             if (confirm("Are you sure you want to delete this lawyer?")) {
                 $.ajax({
@@ -726,12 +1288,12 @@
                 });
             }
         }
-    
+
         function openApprovalModal(lawyerId) {
             selectedLawyerId = lawyerId;
             $("#approvalModal").css("display", "block");
         }
-    
+
         function closeApprovalModal() {
             selectedLawyerId = null;
             $("#approvalModal").css("display", "none");
@@ -754,7 +1316,7 @@
         function viewClientAppointments(clientEmail) {
             window.location.href = `/admin/client_appointments/${clientEmail}`;
         }
-    
+
         function approveLawyer() {
             if (selectedLawyerId) {
                 $.ajax({
@@ -773,7 +1335,7 @@
                 });
             }
         }
-    
+
         function confirmDeleteLawyer() {
             if (selectedLawyerIdForDelete) {
                 $.ajax({
@@ -792,7 +1354,99 @@
                 });
             }
         }
-        
+        // Function to load and display the next appointment
+        function loadNextAppointment() {
+            $.ajax({
+                url: '/api/admin/appointments',
+                type: 'GET',
+                success: function(appointmentsData) {
+                    const appointmentDetails = $("#appointment-details");
+                    const nextAppointment = $("#next-appointment");
+                    
+                    // Check if data is valid
+                    if (!Array.isArray(appointmentsData)) {
+                        console.error("Invalid appointments data:", appointmentsData);
+                        showAppointmentError();
+                        return;
+                    }
+
+                    // Filter and sort appointments
+                    const now = new Date();
+                    let upcomingAppointments = [];
+                    
+                    appointmentsData.forEach(appt => {
+                        try {
+                            if (appt.appointment_date && appt.appointment_time) {
+                                const apptDateStr = `${appt.appointment_date}T${appt.appointment_time}:00`;
+                                const apptDateTime = new Date(apptDateStr);
+                                
+                                if (apptDateTime > now) {
+                                    upcomingAppointments.push({
+                                        ...appt,
+                                        datetime: apptDateTime
+                                    });
+                                }
+                            }
+                        } catch (e) {
+                            console.error("Error parsing appointment date:", e);
+                        }
+                    });
+
+                    // Sort by date/time
+                    upcomingAppointments.sort((a, b) => a.datetime - b.datetime);
+
+                    if (upcomingAppointments.length > 0) {
+                        displayNextAppointment(upcomingAppointments[0]);
+                    } else {
+                        showNoAppointments();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error fetching appointments:", status, error);
+                    showAppointmentError();
+                }
+            });
+        }
+
+        function displayNextAppointment(appt) {
+            const nextAppointment = $("#next-appointment");
+            const appointmentDetails = $("#appointment-details");
+            
+            // Basic info
+            $("#appointment-client").text(appt.client_name || "Unknown Client");
+            $("#appointment-lawyer").text(appt.lawyer_name || "Unknown Lawyer");
+            $("#appointment-councilid").text(appt.bar_council_id || "N/A");
+            
+            // Format date/time
+            try {
+                const options = { 
+                    weekday: 'short', 
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: true
+                };
+                $("#appointment-time").text(appt.datetime.toLocaleString('en-US', options));
+                $("#next-appointment-text").text("Today");
+            } catch (e) {
+                $("#appointment-time").text(`${appt.appointment_date} ${appt.appointment_time}`);
+                nextAppointment.text("Upcoming Appointment");
+            }
+            
+            // Show details
+            appointmentDetails.show();
+        }
+
+        function showNoAppointments() {
+            $("#next-appointment-text").text("None");
+            $("#appointment-details").hide();
+        }
+
+        function showAppointmentError() {
+            $("#next-appointment-text").text("Error");
+            $("#appointment-details").hide();
+        }
         function updatePaginationControls(section) {
             const state = paginationState[section];
             const paginationDiv = $(`#${section}-pagination`);
@@ -892,9 +1546,139 @@
             });
         }
         
+        function loadActivityData() {
+            $.get("/admin_activity", function(data) {
+                const activityList = $("#activity-list");
+                activityList.empty();
+                
+                if (data.activities && data.activities.length > 0) {
+                    data.activities.forEach(activity => {
+                        let icon = '';
+                        let text = '';
+                        
+                        if (activity.type === 'login') {
+                            icon = '<i class="fas fa-sign-in-alt"></i>';
+                            text = `Admin logged in from ${activity.ip}`;
+                        } else if (activity.type === 'approval') {
+                            icon = '<i class="fas fa-user-check"></i>';
+                            text = `Approved lawyer: ${activity.details}`;
+                        } else if (activity.type === 'deletion') {
+                            icon = '<i class="fas fa-trash-alt"></i>';
+                            text = `Deleted ${activity.user_type}: ${activity.details}`;
+                        }
+                        
+                        activityList.append(`
+                            <div class="activity-item">
+                                <div class="activity-icon">${icon}</div>
+                                <div class="activity-text">${text}</div>
+                                <div class="activity-time">${activity.time}</div>
+                            </div>
+                        `);
+                    });
+                } else {
+                    activityList.html(`
+                        <div class="activity-item">
+                            <div class="activity-icon"><i class="fas fa-info-circle"></i></div>
+                            <div class="activity-text">No recent activity found</div>
+                        </div>
+                    `);
+                }
+            });
+        }
         
         function loadDashboard() {
+            // First load the basic user/lawyer data
             $.get("/registered_users", function(data) {
+                // Update stats counters
+                const totalUsers = data.users ? Object.keys(data.users).length : 0;
+                const totalLawyers = data.lawyers ? Object.keys(data.lawyers).length : 0;
+                let pendingLawyers = 0;
+                
+                if (data.lawyers) {
+                    pendingLawyers = Object.values(data.lawyers).filter(lawyer => 
+                        !(lawyer.status === true || lawyer.status === "Approved")
+                    ).length;
+                }
+                
+                $("#total-users").text(totalUsers);
+                $("#total-lawyers").text(totalLawyers);
+                $("#pending-lawyers").text(pendingLawyers);
+
+                // Now load all appointments to find the next one
+                $.get("/all_appointments", function(appointmentsData) {
+                    const appointmentDetails = $("#appointment-details");
+                    const nextAppointment = $("#next-appointment");
+                    
+                    if (appointmentsData && appointmentsData.length > 0) {
+                        // Filter and sort appointments to find the next upcoming one
+                        const now = new Date();
+                        let upcomingAppointments = [];
+                        
+                        appointmentsData.forEach(appt => {
+                            try {
+                                if (appt.appointment_date && appt.appointment_time) {
+                                    // Parse date and time
+                                    const [year, month, day] = appt.appointment_date.split('-');
+                                    let [hours, minutes] = appt.appointment_time.split(':');
+                                    
+                                    // Ensure hours and minutes are numbers
+                                    hours = parseInt(hours) || 0;
+                                    minutes = parseInt(minutes) || 0;
+                                    
+                                    // Create date object in local timezone
+                                    const apptDate = new Date(year, month - 1, day, hours, minutes);
+                                    
+                                    if (apptDate > now) {
+                                        upcomingAppointments.push({
+                                            ...appt,
+                                            datetime: apptDate
+                                        });
+                                    }
+                                }
+                            } catch (e) {
+                                console.error("Error parsing appointment:", e);
+                            }
+                        });
+
+                        // Sort by date/time
+                        upcomingAppointments.sort((a, b) => a.datetime - b.datetime);
+
+                        if (upcomingAppointments.length > 0) {
+                            const nextAppt = upcomingAppointments[0];
+                            nextAppointment.text("Upcoming Appointment");
+                            $("#appointment-client").text(nextAppt.client_name || "Unknown Client");
+                            $("#appointment-lawyer").text(nextAppt.lawyer_name || "Unknown Lawyer");
+                            $("#appointment-councilid").text(nextAppt.bar_council_id || "N/A");
+                            
+                            // Format the appointment time nicely
+                            try {
+                                const options = { 
+                                    weekday: 'short', 
+                                    month: 'short', 
+                                    day: 'numeric',
+                                    hour: '2-digit', 
+                                    minute: '2-digit',
+                                    hour12: true
+                                };
+                                $("#appointment-time").text(nextAppt.datetime.toLocaleString('en-US', options));
+                            } catch (e) {
+                                $("#appointment-time").text(`${nextAppt.appointment_date} ${nextAppt.appointment_time}`);
+                            }
+                            
+                            appointmentDetails.show();
+                        } else {
+                            nextAppointment.text("None");
+                            appointmentDetails.hide();
+                        }
+                    } else {
+                        nextAppointment.text("None");
+                        appointmentDetails.hide();
+                    }
+                }).fail(function() {
+                    $("#next-appointment").text("Error");
+                    $("#appointment-details").hide();
+                    console.error("Failed to load appointments");
+                });
                 // Display Users as Cards
                 let userList = $("#user-list");
                 userList.empty();
@@ -1014,7 +1798,7 @@
                 }
             });
         }
-    
+
         $(document).ready(function() {
             checkAdminSession();
             $("#confirmApproval").click(approveLawyer);

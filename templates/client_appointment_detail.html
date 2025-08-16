@@ -3,236 +3,425 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Client Appointments</title>
+  <title>LegalEagle | My Appointments</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
   <style>
     :root {
-      --primary-blue: #5D8AA8;
-      --light-blue: #91A8D0;
-      --pastel-blue: #E6F2FF;
-      --accent-blue: #4B9CD3;
-      --dark-blue: #2C5E8B;
-      --shadow: 0 4px 20px rgba(45, 93, 138, 0.15);
+      --deep-blue: #0a1f3d;
+      --royal-blue: #1a3a6a;
+      --light-blue: #4d7bc3;
+      --gold: #c9a227;
+      --light-gold: #e8c766;
+      --cream: #f8f5ee;
+      --shadow: 0 10px 30px rgba(10, 31, 61, 0.2);
     }
     
-    body { 
-      font-family: 'Segoe UI', sans-serif; 
-      padding: 20px;
+    body {
+      font-family: 'Montserrat', sans-serif;
+      background-color: var(--cream);
+      color: var(--deep-blue);
       min-height: 100vh;
-      background: var(--pastel-blue);
-      color: var(--dark-blue);
-    }
-    
-    .header {
-      background: white;
+      overflow-x: hidden;
+      position: relative;
       padding: 20px;
-      border-radius: 12px;
+    }
+
+    /* Animated background elements */
+    .bg-decoration {
+      position: fixed;
+      z-index: -1;
+      opacity: 0.15;
+    }
+
+    .bg-circle-1 {
+      width: 600px;
+      height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--light-blue), transparent);
+      top: -300px;
+      right: -300px;
+      animation: float 12s ease-in-out infinite;
+    }
+
+    .bg-circle-2 {
+      width: 400px;
+      height: 400px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--gold), transparent);
+      bottom: -200px;
+      left: -200px;
+      animation: float 8s ease-in-out infinite reverse;
+    }
+
+    .bg-square {
+      width: 300px;
+      height: 300px;
+      background: linear-gradient(45deg, var(--light-blue), var(--gold));
+      top: 50%;
+      right: 10%;
+      transform: rotate(45deg);
+      animation: pulse 15s ease infinite;
+      opacity: 0.1;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.1; }
+      50% { opacity: 0.2; }
+    }
+
+    /* Header */
+    .header {
+      height: 20vh;
+      background: rgba(248, 245, 238, 0.9);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
       box-shadow: var(--shadow);
-      margin-bottom: 20px;
+      padding: 18px 25px; /* Slightly reduced padding */
+      margin: 25px;
+      border-bottom: 4px solid var(--gold);
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 3px solid var(--accent-blue);
-    }
-    
-    .header h1 {
-      margin: 0;
-      color: var(--dark-blue);
-      font-weight: 700;
+      flex-wrap: nowrap; /* Prevent wrapping */
+      gap: 20px; /* Space between elements */
     }
 
     .page-title {
-      margin: 0;
-      color: var(--dark-blue);
+      font-family: 'Playfair Display', serif;
       font-weight: 700;
+      font-size: 1.7rem; /* Slightly smaller font */
+      color: var(--deep-blue);
+      position: relative;
+      display: inline-block;
+      white-space: nowrap; /* Prevent text wrapping */
+      margin: 0; /* Remove default margins */
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--dark-blue), var(--primary-blue));
-      border: none;
-      font-weight: 500;
-      color: white;
+      padding: 8px 16px; /* Slightly more compact button */
+      font-size: 0.9rem; /* Slightly smaller font */
+      white-space: nowrap; /* Prevent button text wrapping */
+      flex-shrink: 0; /* Prevent button from shrinking */
     }
-
-    .back-btn {
+    .page-title::after {
+      content: '';
       position: absolute;
-      left: 20px;
-      background: linear-gradient(135deg, var(--dark-blue), var(--primary-blue));
-      color: white;
+      bottom: -8px;
+      left: 0;
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), var(--light-gold));
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: linear-gradient(135deg, var(--royal-blue), var(--deep-blue));
       border: none;
-      padding: 8px 16px;
       border-radius: 8px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.3s;
+      padding: 10px 18px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 4px 15px rgba(26, 58, 106, 0.3);
+      transition: all 0.3s ease;
     }
 
-    .back-btn:hover {
+    .btn-primary:hover {
       transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(44, 94, 139, 0.2);
-      color: white;
+      box-shadow: 0 6px 20px rgba(26, 58, 106, 0.4);
     }
 
-    .card-container { 
+    .modal-backdrop {
+      z-index: 1040; /* Between dropdown and modal */
+    }
+
+    /* Cards - Perfectly proportioned compact size */
+    .card-container {
+      padding: 35px;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px; 
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 40px;
     }
-    
+
     .appointment-card {
-      position: relative; 
-      background: white; 
-      border-radius: 12px; 
-      padding: 20px; 
+      background: rgba(248, 245, 238, 0.92);
+      backdrop-filter: blur(8px);
+      border-radius: 12px;
+      padding: 18px;
       box-shadow: var(--shadow);
-      transition: all 0.3s ease; 
-      text-align: center;
-      border-top: 4px solid var(--accent-blue);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(201, 162, 39, 0.15);
+      animation: fadeInUp 0.6s ease-out;
+      z-index: 1;
     }
-    
-    .appointment-card:hover { 
+
+    .appointment-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, var(--gold), var(--light-gold));
+    }
+
+    .appointment-card:hover {
       transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(45, 93, 138, 0.2);
+      box-shadow: 0 12px 28px rgba(10, 31, 61, 0.25);
     }
-    
+
+    /* Restored Expired Watermark with perfect styling */
     .appointment-card.expired { 
-      background-color: #f5f5f5 !important; 
+      background-color: rgba(245, 245, 245, 0.85) !important;
+      position: relative;
     }
     
-    .appointment-card.expired::before {
+    .appointment-card.expired::after {
       content: "EXPIRED"; 
       position: absolute; 
       top: 50%; 
       left: 50%; 
-      transform: translate(-50%, -50%) rotate(-45deg);
-      font-size: 3rem; 
-      color: rgba(145, 168, 208, 0.15); 
+      transform: translate(-50%, -50%) rotate(-15deg);
+      font-size: 2rem; 
+      color: rgba(201, 162, 39, 0.12); 
       font-weight: 900; 
+      font-family: 'Playfair Display', serif;
       pointer-events: none; 
       z-index: 1;
-    }
-    
-    .lawyer-pic { 
-      width: 80px; 
-      height: 80px; 
-      object-fit: cover; 
-      border-radius: 50%; 
-      margin-bottom: 10px; 
-      border: 3px solid var(--accent-blue);
-    }
-    
-    .modal-lg { 
-      max-width: 900px; 
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
 
+    /* Perfectly proportioned lawyer image */
+    .lawyer-pic {
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 50%;
+      border: 2px solid var(--cream);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin: 0 auto 12px auto;
+      display: block;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, var(--gold), var(--light-gold));
+      padding: 2px;
+    }
+
+    .appointment-card:hover .lawyer-pic {
+      transform: scale(1.08) rotate(5deg);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    }
+
+    /* Proportionate text sizes */
+    .card-lawyer-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 4px;
+      text-align: center;
+      color: var(--deep-blue);
+    }
+    
+    .card-lawyer-id {
+      font-size: 0.75rem;
+      color: var(--royal-blue);
+      margin-bottom: 12px;
+      text-align: center;
+    }
+    
+    .card-detail {
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .card-detail i {
+      margin-right: 8px;
+      color: var(--gold);
+      font-size: 0.9rem;
+      min-width: 18px;
+    }
+
+    /* Status badges */
+    .badge {
+      padding: 5px 10px;
+      border-radius: 14px;
+      font-weight: 600;
+      font-size: 0.7rem;
+      margin-top: 8px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .badge i {
+      font-size: 0.75rem;
+      margin-right: 4px;
+    }
+
+    /* Floating animation */
+    @keyframes cardFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .appointment-card {
+      animation: fadeInUp 0.6s ease-out, cardFloat 8s ease-in-out infinite;
+    }
+
+    .appointment-card:hover {
+      animation: fadeInUp 0.6s ease-out, cardFloat 5s ease-in-out infinite;
+    }
+
+    /* Loading animation */
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(26, 58, 106, 0.1);
+      border-top: 3px solid var(--gold);
+      border-radius: 50%;
+      animation: spin 1.5s linear infinite;
+      margin: 0 auto;
+    }
+
+    /* Dropdown */
+    .dropdown {
+      position: relative;
+      z-index: 1000; /* Higher than card z-index */
+    }
+    .dropdown-menu {
+      z-index: 1050; /* Ensure it's above everything else */
+      position: absolute;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .dropdown-toggle {
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 0.9rem;
+    }
+
+    /* Modal */
     .modal-content {
-      border-radius: 12px;
+      border-radius: 14px;
+      overflow: hidden;
       border: none;
-      box-shadow: 0 10px 30px rgba(45, 93, 138, 0.2);
-      border-top: 4px solid var(--accent-blue);
+      box-shadow: 0 15px 40px rgba(10, 31, 61, 0.3);
+      background: rgba(248, 245, 238, 0.96);
+      backdrop-filter: blur(12px);
+    }
+
+    .modal {
+      z-index: 1060; /* Highest priority */
     }
 
     .modal-header {
-      border-bottom: 1px dashed var(--light-blue);
-      background: var(--pastel-blue);
-      border-radius: 12px 12px 0 0;
+      border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+      padding: 16px 20px;
     }
 
-    .modal-title {
-      color: var(--dark-blue);
-      font-weight: 600;
-    }
-
-    .btn-warning {
-      background: linear-gradient(135deg, var(--accent-blue), var(--primary-blue));
-      border: none;
-      color: white;
-      font-weight: 500;
-    }
-
-    .btn-danger {
-      background: linear-gradient(135deg, #E53935, #C62828);
-      border: none;
-      font-weight: 500;
-    }
-
-    .badge {
-      padding: 6px 12px;
-      font-size: 0.8rem;
-      font-weight: 600;
-      border-radius: 20px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-    
-    .badge-success {
-      background: linear-gradient(135deg, #4CAF50, #2E7D32);
-      color: white;
-    }
-    
-    .badge-secondary {
-      background: linear-gradient(135deg, #9E9E9E, #616161);
-      color: white;
-    }
-    
-    .badge-danger {
-      background: linear-gradient(135deg, #E53935, #C62828);
-      color: white;
-    }
-    
-    .badge-warning {
-      background: linear-gradient(135deg, var(--accent-blue), var(--primary-blue));
-      color: white;
-    }
-    
-    .dropdown {
-      margin-bottom: 20px;
-      flex-direction: row-reverse;
+    .sort-option {
+      cursor: pointer;
       display: flex;
-      position: relative;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
     }
     
-    /* Animation for new cards */
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+    .sort-option:hover {
+      background-color: rgba(0,0,0,0.05);
     }
     
-    .appointment-card {
-      animation: fadeInUp 0.6s ease-out;
+    .sort-icon {
+      margin-left: 8px;
+      color: var(--gold);
     }
-</style>
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+      
+      .card-container {
+        grid-template-columns: 1fr;
+        gap: 15px;
+      }
+      
+      .header {
+        padding: 15px 20px;
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .page-title {
+        font-size: 1.6rem;
+        margin-bottom: 10px;
+      }
+      
+      .page-title::after {
+        left: 50%;
+        transform: translateX(-50%);
+      }
+      
+      .btn-primary {
+        width: 100%;
+      }
+    }
+  </style>
 </head>
 <body>
+  <!-- Animated background elements -->
+  <div class="bg-decoration bg-circle-1"></div>
+  <div class="bg-decoration bg-circle-2"></div>
+  <div class="bg-decoration bg-square"></div>
 
-  <div class="header">
+  <div class="header animate__animated animate__fadeInDown">
     <h1 class="page-title">My Appointments</h1>
-    <a class="btn btn-primary" href="{{ url_for('afterlogin') }}">Back to Dashboard</a>
+    <div class="d-flex align-items-center gap-3">
+      <div class="dropdown">
+        <button class="btn btn-outline-secondary dropdown-toggle" type="button" 
+                data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="bi bi-funnel-fill me-2"></i> Sort By
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li>
+            <div class="sort-option" onclick="toggleSort('name')">
+              <span>
+                <i class="bi bi-person me-2"></i> Name
+              </span>
+              <i id="name-sort-icon" class="bi bi-arrow-down-up sort-icon"></i>
+            </div>
+          </li>
+          <li>
+            <div class="sort-option" onclick="toggleSort('date')">
+              <span>
+                <i class="bi bi-calendar me-2"></i> Date
+              </span>
+              <i id="date-sort-icon" class="bi bi-arrow-down-up sort-icon"></i>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <a class="btn btn-primary" href="{{ url_for('afterlogin') }}">
+        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+      </a>
+    </div>
   </div>
-  <div class="dropdown">
-    <button class="btn btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-      Sort By
-    </button>
-    <ul class="dropdown-menu">
-      <li><a class="dropdown-item" href="#" onclick="setSortOption('az')">A → Z</a></li>
-      <li><a class="dropdown-item" href="#" onclick="setSortOption('za')">Z → A</a></li>
-      <li><a class="dropdown-item" href="#" onclick="setSortOption('newest')">Newest First</a></li>
-      <li><a class="dropdown-item" href="#" onclick="setSortOption('oldest')">Oldest First</a></li>
-    </ul>
-  </div>    
 
   <div class="card-container" id="appointments-container">
-    <div class="text-muted text-center">Loading appointments...</div>
+    <div class="text-center py-4 animate__animated animate__fadeIn">
+      <div class="loading-spinner"></div>
+      <p class="mt-3 mb-0">Loading appointments...</p>
+    </div>
   </div>
 
   <!-- Lawyer Details Modal -->
@@ -240,322 +429,328 @@
     <div class="modal-dialog modal-lg modal-dialog-centered">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Appointment Details</h5>
+          <h5 class="modal-title"><i class="bi bi-calendar-check me-2"></i> Appointment Details</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
         <div class="modal-body">
           <div id="lawyer-profile-content" class="row"></div>
         </div>
         <div class="modal-footer" id="modalFooterButtons">
-          <button id="rescheduleBtn" class="btn btn-warning"><i class="bi bi-clock-history"></i> Reschedule</button>
-          <button id="deleteBtn" class="btn btn-danger"><i class="bi bi-x-circle"></i> Delete</button>
+          <button id="rescheduleBtn" class="btn btn-warning"><i class="bi bi-clock-history me-2"></i> Reschedule</button>
+          <button id="deleteBtn" class="btn btn-danger"><i class="bi bi-trash me-2"></i> Delete</button>
         </div>        
       </div>
     </div>
   </div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import { getDatabase, ref, child, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-    import { getDatabase, ref, child, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+  const firebaseConfig = {
+    apiKey: "{{ firebase_api_key }}",
+    authDomain: "{{ firebase_auth_domain }}",
+    projectId: "{{ firebase_project_id }}",
+    storageBucket: "{{ firebase_storage_bucket }}",
+    messagingSenderId: "{{ firebase_messaging_sender_id }}",
+    appId: "{{ firebase_app_id }}",
+    databaseURL: "https://legaleagle-auth-default-rtdb.firebaseio.com/"
+  };
 
-    const firebaseConfig = {
-      apiKey: "{{ firebase_api_key }}",
-      authDomain: "{{ firebase_auth_domain }}",
-      projectId: "{{ firebase_project_id }}",
-      storageBucket: "{{ firebase_storage_bucket }}",
-      messagingSenderId: "{{ firebase_messaging_sender_id }}",
-      appId: "{{ firebase_app_id }}",
-      databaseURL: "https://legaleagle-auth-default-rtdb.firebaseio.com/"
-    };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+  let currentAppointment = null;
+  
+  let currentSort = { 
+    field: null, 
+    direction: 'desc',
+    type: 'date'
+  };
+  
+  const availableTimeSlots = ["09:00 AM", "09:30 AM", "11:00 AM", "02:00 PM", "03:30 PM", "05:00 PM"];
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
-    let currentAppointment = null;
-    
-    let currentSort = "newest"; // default sort
-    function setSortOption(option) {
-      currentSort = option;
-      auth.currentUser && loadAppointments(auth.currentUser.email);
+  onAuthStateChanged(auth, (user) => {
+    if (user) loadAppointments(user.email);
+    else window.location.href = "{{ url_for('client_login') }}";
+  });
+
+  function toggleSort(field) {
+    if (currentSort.type === field) {
+      currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+    } else {
+      currentSort.type = field;
+      currentSort.direction = 'asc';
     }
     
-    // Approved time slots
-    const availableTimeSlots = ["09:00 AM", "09:30 AM", "11:00 AM", "02:00 PM", "03:30 PM", "05:00 PM"];
+    updateSortIcons();
+    applyCurrentSort();
+  }
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) loadAppointments(user.email);
-      else window.location.href = "{{ url_for('client_login') }}";
+  function updateSortIcons() {
+    document.querySelectorAll('.sort-icon').forEach(icon => {
+      icon.className = 'bi bi-arrow-down-up sort-icon';
     });
-
-    async function getLawyerData(barCouncilId) {
-      try {
-        if (!barCouncilId) return {};
-        const safeId = barCouncilId.toString().replace(/\//g, '_');
-        const path = `lawyers_profile/lawyer_profile/${safeId}`;
-        const snapshot = await get(child(ref(db), path));
-        return snapshot.exists() ? snapshot.val() : {};
-      } catch (error) {
-        console.error("Error fetching lawyer data:", error);
-        return {};
+    
+    if (currentSort.type) {
+      const icon = document.getElementById(`${currentSort.type}-sort-icon`);
+      if (icon) {
+        icon.className = currentSort.direction === 'asc' 
+          ? 'bi bi-arrow-up sort-icon' 
+          : 'bi bi-arrow-down sort-icon';
       }
     }
+  }
 
-    async function loadAppointments(clientEmail) {
-      const container = document.getElementById('appointments-container');
-      try {
-        const res = await fetch(`/api/get_appointments?type=client&email=${encodeURIComponent(clientEmail)}`);
-        const data = await res.json();
-        container.innerHTML = "";
+  function applyCurrentSort() {
+    const container = document.getElementById('appointments-container');
+    if (!container) return;
+    
+    const cards = Array.from(container.querySelectorAll('.appointment-card'));
+    if (cards.length === 0) return;
+    
+    cards.sort((a, b) => {
+      const aValue = getSortValue(a, currentSort.type);
+      const bValue = getSortValue(b, currentSort.type);
+      
+      if (aValue < bValue) return currentSort.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return currentSort.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+    
+    cards.forEach(card => container.appendChild(card));
+  }
 
-        if (!data.appointments?.length) {
-          container.innerHTML = `<div class="text-center py-5 text-muted"><p>No appointments found.</p><a href="{{ url_for('recommend_lawyers_route') }}" class="btn btn-primary">Book an Appointment</a></div>`;
-          return;
-        }
+  function getSortValue(card, type) {
+    if (type === 'name') {
+      return card.querySelector('.card-lawyer-name').textContent.toLowerCase();
+    } else if (type === 'date') {
+      const dateText = card.querySelector('.card-detail:nth-of-type(1)').textContent;
+      const datePart = dateText.split(' (')[0].trim();
+      return new Date(datePart);
+    }
+    return '';
+  }
 
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+  async function getLawyerData(barCouncilId) {
+    try {
+      if (!barCouncilId) return {};
+      const safeId = barCouncilId.toString().replace(/\//g, '_');
+      const path = `lawyers_profile/lawyer_profile/${safeId}`;
+      const snapshot = await get(child(ref(db), path));
+      return snapshot.exists() ? snapshot.val() : {};
+    } catch (error) {
+      console.error("Error fetching lawyer data:", error);
+      return {};
+    }
+  }
 
-        data.appointments.sort((a, b) => {
-          if (currentSort === "az") {
-            return (a.lawyer_name || '').localeCompare(b.lawyer_name || '');
-          } else if (currentSort === "za") {
-            return (b.lawyer_name || '').localeCompare(a.lawyer_name || '');
-          } else if (currentSort === "newest") {
-            return new Date(b.appointment_date) - new Date(a.appointment_date);
-          } else if (currentSort === "oldest") {
-            return new Date(a.appointment_date) - new Date(b.appointment_date);
-          }
-          return 0;
-        });
+  async function loadAppointments(clientEmail) {
+    const container = document.getElementById('appointments-container');
+    try {
+      const res = await fetch(`/api/get_appointments?type=client&email=${encodeURIComponent(clientEmail)}`);
+      const data = await res.json();
+      container.innerHTML = "";
+
+      if (!data.appointments?.length) {
+        container.innerHTML = `
+          <div class="text-center py-4 animate__animated animate__fadeIn">
+            <i class="bi bi-calendar-x-fill" style="font-size: 2.5rem; color: var(--gold);"></i>
+            <h4 class="mt-3" style="font-size: 1.3rem;">No Appointments Found</h4>
+            <p class="mb-3" style="font-size: 0.9rem;">You don't have any scheduled appointments yet</p>
+            <a href="{{ url_for('recommend_lawyers_route') }}" class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem;">
+              <i class="bi bi-plus-circle me-2"></i> Book an Appointment
+            </a>
+          </div>`;
+        return;
+      }
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      let delay = 0;
+      for (let appt of data.appointments) {
+        const apptDate = new Date(appt.appointment_date);
+        apptDate.setHours(0, 0, 0, 0);
+        const isExpired = apptDate < today;
+        const day = new Date(appt.appointment_date).toLocaleDateString('en-US', { weekday: 'long' });
+        const statusBadge = getStatusBadge(appt.status);
+        const rescheduleBadge = appt.reschedule_request 
+          ? `<span class="badge bg-warning ms-1"><i class="bi bi-clock-history me-1"></i> Reschedule</span>` 
+          : '';
+
+        const lawyerData = await getLawyerData(appt.Bar_Council_ID);
+        const lawyerName = lawyerData?.Lawyer_name || appt.lawyer_name || 'Unknown Lawyer';
+        const barId = lawyerData?.Bar_Council_ID || appt.Bar_Council_ID || 'N/A';
+
+        const card = document.createElement("div");
+        card.className = `appointment-card ${isExpired ? 'expired' : ''} animate__animated animate__fadeInUp`;
+        card.style.animationDelay = `${delay}ms`;
+        delay += 100;
         
-
-        for (let appt of data.appointments) {
-          const apptDate = new Date(appt.appointment_date);
-          apptDate.setHours(0, 0, 0, 0);
-          const isExpired = apptDate < today;
-          const day = new Date(appt.appointment_date).toLocaleDateString('en-US', { weekday: 'long' });
-          const statusBadge = getStatusBadge(appt.status);
-          const rescheduleBadge = appt.reschedule_request 
-            ? `<span class="badge bg-warning ms-1">Reschedule Requested</span>` 
-            : '';
-
-
-          const lawyerData = await getLawyerData(appt.Bar_Council_ID);
-          const lawyerName = lawyerData?.Lawyer_name || appt.lawyer_name || 'Unknown Lawyer';
-          const barId = lawyerData?.Bar_Council_ID || appt.Bar_Council_ID || 'N/A';
-
-          const card = document.createElement("div");
-          card.className = `appointment-card ${isExpired ? 'expired' : ''}`;
-          card.innerHTML = `
-            <img src="${lawyerData?.profilePicUrl || 'https://via.placeholder.com/80'}" class="lawyer-pic" />
-            <h5>${lawyerName}</h5>
-            <p class="text-muted">${barId}</p>
-            <p><strong>Date:</strong> ${appt.appointment_date} (${day})</p>
-            <p><strong>Time:</strong> ${appt.appointment_time}</p>
-            <p><strong>Status:</strong> ${statusBadge} ${rescheduleBadge}</p>
-          `;
-          card.onclick = () => openModal(appt, lawyerData, isExpired);
-          container.appendChild(card);
-        }
-      } catch (e) {
-        console.error(e);
-        container.innerHTML = `<div class="alert alert-danger">Error loading appointments.</div>`;
+        card.innerHTML = `
+          <img src="${lawyerData?.profilePicUrl || 'https://via.placeholder.com/120'}" class="lawyer-pic" />
+          <h5 class="card-lawyer-name">${lawyerName}</h5>
+          <p class="card-lawyer-id">${barId}</p>
+          <div class="appointment-details">
+            <p class="card-detail"><i class="bi bi-calendar-check-fill"></i> ${appt.appointment_date} (${day})</p>
+            <p class="card-detail"><i class="bi bi-clock-fill"></i> ${appt.appointment_time}</p>
+            <div class="d-flex justify-content-center">${statusBadge} ${rescheduleBadge}</div>
+          </div>
+        `;
+        card.onclick = () => openModal(appt, lawyerData, isExpired);
+        container.appendChild(card);
       }
-    }
 
-    function getStatusBadge(status) {
-      const map = {
-        confirmed: 'success',
-        pending: 'secondary',
-        delete_requested: 'danger',
-        reschedule_requested: 'warning'
-      };
-      return `<span class="badge bg-${map[status?.toLowerCase()] || 'secondary'}">${status || 'Pending'}</span>`;
-    }
+      updateSortIcons();
+      applyCurrentSort();
 
-    function openModal(appointment, lawyer, expired) {
-      currentAppointment = appointment;
-      const lawyerName = lawyer?.Lawyer_name || appointment.lawyer_name || 'Unknown Lawyer';
-      const barId = lawyer?.Bar_Council_ID || appointment.Bar_Council_ID || 'N/A';
-      const reschedule = appointment.reschedule_request;
+    } catch (e) {
+      console.error(e);
+      container.innerHTML = `
+        <div class="alert alert-danger animate__animated animate__fadeIn" style="padding: 10px 15px; font-size: 0.9rem;">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i> Error loading appointments. Please try again.
+        </div>`;
+    }
+  }
+
+  function getStatusBadge(status) {
+    const statusMap = {
+      'confirmed': { class: 'success', icon: 'bi-check-circle', text: 'Confirmed' },
+      'pending': { class: 'secondary', icon: 'bi-hourglass', text: 'Pending' },
+      'scheduled': { class: 'info', icon: 'bi-calendar-check', text: 'Scheduled' },
+      'reschedule_requested': { class: 'warning', icon: 'bi-clock-history', text: 'Reschedule Requested' },
+      'delete_requested': { class: 'danger', icon: 'bi-exclamation-triangle', text: 'Delete Requested' },
+      'cancelled': { class: 'dark', icon: 'bi-x-circle', text: 'Cancelled' }
+    };
     
-      const profile = document.getElementById('lawyer-profile-content');
-      profile.innerHTML = `
-        <div class="col-md-4 text-center">
-          <img src="${lawyer?.profilePicUrl || 'https://via.placeholder.com/120'}" class="img-thumbnail mb-3" width="120" height="120"/>
-          <h5>${lawyerName}</h5>
-          <p class="text-muted">${barId}</p>
+    const statusInfo = statusMap[status?.toLowerCase()] || statusMap.pending;
+    
+    return `<span class="badge bg-${statusInfo.class}">
+      <i class="bi ${statusInfo.icon} me-1"></i>
+      ${statusInfo.text}
+    </span>`;
+  }
+  
+  function openModal(appointment, lawyer, expired) {
+    currentAppointment = appointment;
+    const lawyerName = lawyer?.Lawyer_name || appointment.lawyer_name || 'Unknown Lawyer';
+    const barId = lawyer?.Bar_Council_ID || appointment.Bar_Council_ID || 'N/A';
+    const reschedule = appointment.reschedule_request;
+  
+    const profile = document.getElementById('lawyer-profile-content');
+    profile.innerHTML = `
+      <div class="col-md-4 text-center">
+        <img src="${lawyer?.profilePicUrl || 'https://via.placeholder.com/150'}" 
+             class="img-thumbnail mb-3 rounded-circle shadow" 
+             width="150" height="150"
+             style="border: 3px solid white; box-shadow: 0 5px 20px rgba(0,0,0,0.1);"/>
+        <h4 class="fw-bold">${lawyerName}</h4>
+        <p class="text-muted">${barId}</p>
+        <div class="d-flex justify-content-center gap-2 mt-3">
+          <span class="badge bg-primary">
+            <i class="bi bi-award me-1"></i> ${lawyer?.Years_of_Experience || 0} yrs exp
+          </span>
+          <span class="badge bg-success">
+            <i class="bi bi-check-circle me-1"></i> ${lawyer?.Successful_cases || 0} cases
+          </span>
         </div>
-        <div class="col-md-8">
-          <p><strong>Practice Area:</strong> ${lawyer?.Practice_area || 'N/A'}</p>
-          <p><strong>Firm:</strong> ${lawyer?.Firm_name || 'N/A'} (${lawyer?.Firm_size || ''})</p>
-          <p><strong>Designation:</strong> ${lawyer?.Designation || 'N/A'}</p>
-          <p><strong>Experience:</strong> ${lawyer?.Years_of_Experience || 0} years</p>
-          <p><strong>Cases:</strong> ${lawyer?.Total_cases || 0} (Success: ${lawyer?.Successful_cases || 0})</p>
-          <p><strong>Fees:</strong> ₹${lawyer?.Nominal_fees_per_hearing || 'N/A'}</p>
-          <p><strong>Location:</strong> ${lawyer?.Location || 'N/A'}</p>
-          <p><strong>Contact:</strong> ${lawyer?.contact || 'N/A'}</p>
-          <p><strong>Case Details:</strong> ${appointment.case_details}</p>
-          ${reschedule ? `
+      </div>
+      <div class="col-md-8">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded">
+              <p class="mb-1 small text-muted">Practice Area</p>
+              <p class="fw-bold">${lawyer?.Practice_area || 'N/A'}</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded">
+              <p class="mb-1 small text-muted">Firm</p>
+              <p class="fw-bold">${lawyer?.Firm_name || 'N/A'} (${lawyer?.Firm_size || ''})</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded">
+              <p class="mb-1 small text-muted">Designation</p>
+              <p class="fw-bold">${lawyer?.Designation || 'N/A'}</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded">
+              <p class="mb-1 small text-muted">Fees per Hearing</p>
+              <p class="fw-bold">₹${lawyer?.Nominal_fees_per_hearing || 'N/A'}</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded">
+              <p class="mb-1 small text-muted">Location</p>
+              <p class="fw-bold">${lawyer?.Location || 'N/A'}</p>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="p-3 bg-light rounded">
+              <p class="mb-1 small text-muted">Contact</p>
+              <p class="fw-bold">${lawyer?.contact || 'N/A'}</p>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="p-3 bg-light rounded">
+              <p class="mb-1 small text-muted">Case Details</p>
+              <p class="fw-bold">${appointment.case_details}</p>
+            </div>
+          </div>
+        </div>
+        ${reschedule ? `
+          <div class="alert alert-warning mt-3">
+            <h6 class="alert-heading"><i class="bi bi-exclamation-triangle-fill me-2"></i> Reschedule Requested</h6>
             <hr>
-            <p class="text-warning"><strong>Reschedule Requested:</strong></p>
-            <p><strong>Proposed Date:</strong> ${reschedule.new_date}</p>
-            <p><strong>Proposed Time:</strong> ${reschedule.new_time}</p>
-            <p><strong>Status:</strong> ${reschedule.status}</p>
-          ` : ''}
-        </div>
-      `;
-    
-      document.getElementById("rescheduleBtn").disabled = expired;
-      document.getElementById("deleteBtn").disabled = expired;
-      
-      // Add reschedule response buttons if applicable
-      const footer = document.getElementById("modalFooterButtons");
-      footer.innerHTML = `
-        <button id="rescheduleBtn" class="btn btn-warning" ${expired ? "disabled" : ""}>
-          <i class="bi bi-clock-history"></i> Reschedule
-        </button>
-        <button id="deleteBtn" class="btn btn-danger" ${expired ? "disabled" : ""}>
-          <i class="bi bi-x-circle"></i> Delete
-        </button>
-        ${appointment.reschedule_request ? `
-          <button id="approveReschedule" class="btn btn-success">
-            <i class="bi bi-check-circle"></i> Approve Reschedule
-          </button>
-          <button id="declineReschedule" class="btn btn-secondary">
-            <i class="bi bi-x-circle-fill"></i> Decline
-          </button>
-        ` : ''}
-      `;
-      
-      // Re-bind click events
-      document.getElementById("rescheduleBtn").onclick = async () => {
-        const rescheduleModal = `
-          <div class="modal fade" id="rescheduleTimeModal" tabindex="-1" aria-hidden="true">
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title">Reschedule Appointment</h5>
-                  <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                  <div class="mb-3">
-                    <label for="rescheduleDate" class="form-label">New Date</label>
-                    <input type="date" class="form-control" id="rescheduleDate" value="${currentAppointment.appointment_date}">
-                  </div>
-                  <div class="mb-3">
-                    <label for="rescheduleTime" class="form-label">New Time</label>
-                    <select class="form-select" id="rescheduleTime">
-                      ${availableTimeSlots.map(slot => 
-                        `<option value="${slot}" ${slot === currentAppointment.appointment_time ? 'selected' : ''}>${slot}</option>`
-                      ).join('')}
-                    </select>
-                  </div>
-                </div>
-                <div class="modal-footer">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                  <button type="button" class="btn btn-warning" id="confirmReschedule">Reschedule</button>
-                </div>
+            <div class="row">
+              <div class="col-md-6">
+                <p class="mb-1 small text-muted">Proposed Date</p>
+                <p class="fw-bold">${reschedule.new_date}</p>
+              </div>
+              <div class="col-md-6">
+                <p class="mb-1 small text-muted">Proposed Time</p>
+                <p class="fw-bold">${reschedule.new_time}</p>
+              </div>
+              <div class="col-12 mt-2">
+                <span class="badge bg-warning">Status: ${reschedule.status}</span>
               </div>
             </div>
           </div>
-        `;
-      
-        document.body.insertAdjacentHTML('beforeend', rescheduleModal);
-        const modal = new bootstrap.Modal(document.getElementById('rescheduleTimeModal'));
-        modal.show();
-      
-        document.getElementById('confirmReschedule').onclick = async () => {
-          const newDate = document.getElementById('rescheduleDate').value;
-          const newTime = document.getElementById('rescheduleTime').value;
-      
-          if (!newDate || !newTime) {
-            alert('Please select both date and time');
-            return;
-          }
-      
-          await fetch('/api/request_reschedule', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              id: currentAppointment.id,
-              new_date: newDate,
-              new_time: newTime,
-              requester: "client"
-            })
-          });
-      
-          alert("Reschedule request sent.");
-          modal.hide();
-          setTimeout(() => {
-            document.getElementById('rescheduleTimeModal').remove();
-          }, 500);
-          location.reload();
-        };
-      
-        document.getElementById('rescheduleTimeModal').addEventListener('hidden.bs.modal', () => {
-          document.getElementById('rescheduleTimeModal').remove();
-        });
-      };
-      
-      document.getElementById("deleteBtn").onclick = async () => {
-        if (!confirm("Are you sure you want to request deletion?")) return;
-      
-        await fetch('/api/request_delete', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: currentAppointment.id,
-            requester: "client"
-          })
-        });
-        location.reload();
-      };
-      
-      if (appointment.reschedule_request) {
-        document.getElementById("approveReschedule").onclick = async () => {
-          await fetch('/api/confirm_reschedule', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              id: currentAppointment.id,
-              new_date: appointment.reschedule_request.new_date,
-              new_time: appointment.reschedule_request.new_time,
-              approve: true
-            })
-          });
-          alert("Reschedule approved.");
-          location.reload();
-        };
-      
-        document.getElementById("declineReschedule").onclick = async () => {
-          await fetch('/api/confirm_reschedule', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              id: currentAppointment.id,
-              approve: false
-            })
-          });
-          alert("Reschedule declined.");
-          location.reload();
-        };
-      }
-      
+        ` : ''}
+      </div>
+    `;
+  
+    document.getElementById("rescheduleBtn").disabled = expired;
+    document.getElementById("deleteBtn").disabled = expired;
     
-      new bootstrap.Modal(document.getElementById('lawyerDetailsModal')).show();
-    }
+    const footer = document.getElementById("modalFooterButtons");
+    footer.innerHTML = `
+      <button id="rescheduleBtn" class="btn btn-warning" ${expired ? "disabled" : ""}>
+        <i class="bi bi-clock-history me-2"></i> Reschedule
+      </button>
+      <button id="deleteBtn" class="btn btn-danger" ${expired ? "disabled" : ""}>
+        <i class="bi bi-trash me-2"></i> Delete
+      </button>
+      ${appointment.reschedule_request ? `
+        <button id="approveReschedule" class="btn btn-success">
+          <i class="bi bi-check-circle me-2"></i> Approve
+        </button>
+        <button id="declineReschedule" class="btn btn-secondary">
+          <i class="bi bi-x-circle-fill me-2"></i> Decline
+        </button>
+      ` : ''}
+    `;
     
-
     document.getElementById("rescheduleBtn").onclick = async () => {
-      // Create reschedule modal with time slot dropdown
       const rescheduleModal = `
         <div class="modal fade" id="rescheduleTimeModal" tabindex="-1" aria-hidden="true">
           <div class="modal-dialog">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title">Reschedule Appointment</h5>
+                <h5 class="modal-title"><i class="bi bi-clock-history me-2"></i> Reschedule Appointment</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
               </div>
               <div class="modal-body">
@@ -574,69 +769,133 @@
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-warning" id="confirmReschedule">Reschedule</button>
+                <button type="button" class="btn btn-warning" id="confirmReschedule">
+                  <i class="bi bi-check-circle me-2"></i> Confirm Reschedule
+                </button>
               </div>
             </div>
           </div>
         </div>
       `;
-      
-      // Add modal to DOM
+    
       document.body.insertAdjacentHTML('beforeend', rescheduleModal);
       const modal = new bootstrap.Modal(document.getElementById('rescheduleTimeModal'));
       modal.show();
-      
-      // Handle confirm button click
+    
       document.getElementById('confirmReschedule').onclick = async () => {
         const newDate = document.getElementById('rescheduleDate').value;
         const newTime = document.getElementById('rescheduleTime').value;
-        
-        if (!newDate) {
-          alert('Please select a date');
+    
+        if (!newDate || !newTime) {
+          alert('Please select both date and time');
           return;
         }
-        
-        if (!confirm(`Reschedule to ${newDate} at ${newTime}?`)) return;
-
-        await fetch('/api/request_reschedule', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: currentAppointment.id,
-            new_date: newDate,
-            new_time: newTime,
-            requester: "client"
-          })
-        });
-        
-        modal.hide();
-        setTimeout(() => {
-          document.getElementById('rescheduleTimeModal').remove();
-        }, 500);
-        location.reload();
+    
+        try {
+          const response = await fetch('/api/request_reschedule', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: currentAppointment.id,
+              new_date: newDate,
+              new_time: newTime,
+              requester: "client"
+            })
+          });
+          
+          if (!response.ok) throw new Error('Failed to request reschedule');
+          
+          alert("Reschedule request sent.");
+          modal.hide();
+          setTimeout(() => {
+            document.getElementById('rescheduleTimeModal').remove();
+          }, 500);
+          location.reload();
+        } catch (error) {
+          console.error("Error requesting reschedule:", error);
+          alert("Failed to request reschedule. Please try again.");
+        }
       };
-      
-      // Clean up modal when closed
+    
       document.getElementById('rescheduleTimeModal').addEventListener('hidden.bs.modal', () => {
         document.getElementById('rescheduleTimeModal').remove();
       });
     };
-
+    
     document.getElementById("deleteBtn").onclick = async () => {
       if (!confirm("Are you sure you want to request deletion?")) return;
-
-      await fetch('/api/request_delete', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: currentAppointment.id,
-          requester: "client"
-        })
-      });
-      location.reload();
+    
+      try {
+        const response = await fetch('/api/request_delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: currentAppointment.id,
+            requester: "client"
+          })
+        });
+        
+        if (!response.ok) throw new Error('Failed to request deletion');
+        
+        alert("Delete request sent.");
+        location.reload();
+      } catch (error) {
+        console.error("Error requesting deletion:", error);
+        alert("Failed to request deletion. Please try again.");
+      }
     };
-    window.setSortOption = setSortOption;
-  </script>
+    
+    if (appointment.reschedule_request) {
+      document.getElementById("approveReschedule").onclick = async () => {
+        try {
+          const response = await fetch('/api/confirm_reschedule', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: currentAppointment.id,
+              new_date: appointment.reschedule_request.new_date,
+              new_time: appointment.reschedule_request.new_time,
+              approve: true
+            })
+          });
+          
+          if (!response.ok) throw new Error('Failed to approve reschedule');
+          
+          alert("Reschedule approved. Appointment updated.");
+          location.reload();
+        } catch (error) {
+          console.error("Error approving reschedule:", error);
+          alert("Failed to approve reschedule. Please try again.");
+        }
+      };
+    
+      document.getElementById("declineReschedule").onclick = async () => {
+        try {
+          const response = await fetch('/api/confirm_reschedule', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: currentAppointment.id,
+              approve: false
+            })
+          });
+          
+          if (!response.ok) throw new Error('Failed to decline reschedule');
+          
+          alert("Reschedule declined. Original appointment kept.");
+          location.reload();
+        } catch (error) {
+          console.error("Error declining reschedule:", error);
+          alert("Failed to decline reschedule. Please try again.");
+        }
+      };
+    }
+    
+    new bootstrap.Modal(document.getElementById('lawyerDetailsModal')).show();
+  }
+
+  window.toggleSort = toggleSort;
+</script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

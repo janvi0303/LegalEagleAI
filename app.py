@@ -120,35 +120,148 @@ def request_reschedule():
     new_time = data.get('new_time')
     requester = data.get('requester')
 
+    if not all([appointment_id, new_date, new_time, requester]):
+        return jsonify({"error": "Missing required parameters"}), 400
+
     try:
+        # Validate date format
+        datetime.strptime(new_date, "%Y-%m-%d")
+        
         bookings_ref = db.reference('bookings')
         all_bookings = bookings_ref.get() or {}
+        
         for email_key, appointments in all_bookings.items():
             for key, appointment in appointments.items():
                 if appointment.get("id") == appointment_id:
                     updates = {}
+                    status_update = "reschedule_requested"
+                    
                     if requester == "client":
-                        updates[f"{email_key}/{key}/reschedule_request"] = {
-                            "new_date": new_date,
-                            "new_time": new_time,
-                            "status": "pending_lawyer_confirmation"
-                        }
-                        updates[f"{email_key}/{key}/status"] = "reschedule_requested"
+                        reschedule_status = "pending_lawyer_confirmation"
                     elif requester == "lawyer":
-                        updates[f"{email_key}/{key}/reschedule_request"] = {
-                            "new_date": new_date,
-                            "new_time": new_time,
-                            "status": "pending_client_confirmation"
-                        }
-                        updates[f"{email_key}/{key}/status"] = "reschedule_requested"
+                        reschedule_status = "pending_client_confirmation"
+                    else:
+                        return jsonify({"error": "Invalid requester type"}), 400
+
+                    updates[f"{email_key}/{key}/reschedule_request"] = {
+                        "new_date": new_date,
+                        "new_time": new_time,
+                        "status": reschedule_status,
+                        "requested_at": datetime.now().isoformat()
+                    }
+                    updates[f"{email_key}/{key}/status"] = status_update
+                    
+                    # Check for time slot availability
+                    if not is_time_slot_available(new_date, new_time, appointment.get('lawyer_name'), appointment_id):
+                        return jsonify({"error": "This time slot is already booked"}), 400
+                    
                     bookings_ref.update(updates)
-                    return jsonify({"message": "Reschedule request submitted."})
-        return jsonify({"error": "Appointment not found."}), 404
+                    return jsonify({
+                        "message": "Reschedule request submitted",
+                        "status": status_update,
+                        "reschedule_status": reschedule_status
+                    })
+        
+        return jsonify({"error": "Appointment not found"}), 404
+    except ValueError as ve:
+        return jsonify({"error": f"Invalid date format: {str(ve)}"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+# New helper function for time slot availability
+def is_time_slot_available(date, time, lawyer_name, exclude_appointment_id=None):
+    try:
+        bookings_ref = db.reference('bookings')
+        all_bookings = bookings_ref.get() or {}
+        
+        for email_key, appointments in all_bookings.items():
+            for key, appointment in appointments.items():
+                # Skip the appointment we're trying to reschedule
+                if appointment.get("id") == exclude_appointment_id:
+                    continue
+                    
+                if (appointment.get("lawyer_name") == lawyer_name and 
+                    appointment.get("appointment_date") == date and
+                    appointment.get("appointment_time") == time):
+                    return False
+        return True
+    except Exception:
+        return False
+
+@app.route('/api/confirm_reschedule', methods=['POST'])
+def confirm_reschedule():
+    data = request.json
+    appointment_id = data.get('id')
+    approve = data.get('approve', False)
+    new_date = data.get('new_date')  # Only needed if approving
+    new_time = data.get('new_time')  # Only needed if approving
+
+    if not appointment_id:
+        return jsonify({"error": "Missing appointment ID"}), 400
+
+    try:
+        bookings_ref = db.reference('bookings')
+        all_bookings = bookings_ref.get() or {}
+        
+        for email_key, appointments in all_bookings.items():
+            for key, appointment in appointments.items():
+                if appointment.get("id") == appointment_id:
+                    updates = {}
+                    
+                    if approve:
+                        if not all([new_date, new_time]):
+                            return jsonify({"error": "New date and time required for approval"}), 400
+                            
+                        # Validate the new time slot is available
+                        if not is_time_slot_available(new_date, new_time, appointment.get('lawyer_name'), appointment_id):
+                            return jsonify({"error": "This time slot is no longer available"}), 400
+                            
+                        updates[f"{email_key}/{key}/appointment_date"] = new_date
+                        updates[f"{email_key}/{key}/appointment_time"] = new_time
+                        updates[f"{email_key}/{key}/status"] = "confirmed"
+                    
+                    # Clear the reschedule request regardless of approval
+                    updates[f"{email_key}/{key}/reschedule_request"] = None
+                    
+                    bookings_ref.update(updates)
+                    return jsonify({
+                        "message": "Reschedule request processed",
+                        "status": "confirmed" if approve else "original appointment kept"
+                    })
+        
+        return jsonify({"error": "Appointment not found"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/api/confirm_delete', methods=['POST'])
+def confirm_delete():
+    data = request.json
+    appointment_id = data.get('id')
+    confirm = data.get('confirm', False)
 
-
+    try:
+        bookings_ref = db.reference('bookings')
+        all_bookings = bookings_ref.get() or {}
+        
+        for email_key, appointments in all_bookings.items():
+            for key, appointment in appointments.items():
+                if appointment.get("id") == appointment_id:
+                    if confirm:
+                        # Delete the appointment
+                        bookings_ref.child(f"{email_key}/{key}").delete()
+                        return jsonify({"message": "Appointment deleted."})
+                    else:
+                        # Just update the status
+                        updates = {
+                            f"{email_key}/{key}/status": "confirmed",
+                            f"{email_key}/{key}/delete_by": None
+                        }
+                        bookings_ref.update(updates)
+                        return jsonify({"message": "Delete request cancelled."})
+        
+        return jsonify({"error": "Appointment not found."}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/api/request_delete', methods=['POST'])
 def request_delete():
@@ -156,22 +269,57 @@ def request_delete():
     appointment_id = data.get('id')
     requester = data.get('requester')
 
+    if not all([appointment_id, requester]):
+        return jsonify({"error": "Missing required parameters"}), 400
+
     try:
         bookings_ref = db.reference('bookings')
         all_bookings = bookings_ref.get() or {}
+        
         for email_key, appointments in all_bookings.items():
             for key, appointment in appointments.items():
                 if appointment.get("id") == appointment_id:
                     updates = {
                         f"{email_key}/{key}/status": "delete_requested",
-                        f"{email_key}/{key}/delete_by": requester
+                        f"{email_key}/{key}/delete_by": requester,
+                        f"{email_key}/{key}/delete_requested_at": datetime.now().isoformat()
                     }
+                    
                     bookings_ref.update(updates)
-                    return jsonify({"message": "Delete request submitted."})
-        return jsonify({"error": "Appointment not found."}), 404
+                    return jsonify({
+                        "message": "Delete request submitted",
+                        "status": "delete_requested"
+                    })
+        
+        return jsonify({"error": "Appointment not found"}), 404
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+# New endpoint for immediate deletion (used by lawyers)
+@app.route('/api/delete_appointment', methods=['POST'])
+def delete_appointment():
+    data = request.json
+    appointment_id = data.get('id')
+
+    if not appointment_id:
+        return jsonify({"error": "Missing appointment ID"}), 400
+
+    try:
+        bookings_ref = db.reference('bookings')
+        all_bookings = bookings_ref.get() or {}
+        
+        for email_key, appointments in all_bookings.items():
+            for key, appointment in appointments.items():
+                if appointment.get("id") == appointment_id:
+                    bookings_ref.child(f"{email_key}/{key}").delete()
+                    return jsonify({
+                        "message": "Appointment deleted successfully",
+                        "status": "deleted"
+                    })
+        
+        return jsonify({"error": "Appointment not found"}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 # Download NLTK resources
 nltk.download('punkt')
@@ -186,8 +334,6 @@ def fetch_lawyer_profiles():
         return list(lawyers.values())  # Convert dictionary values to a list
     else:
         return []
-    
-
 
 # Load a pre-trained model for text classification
 classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
@@ -500,8 +646,7 @@ def book_appointment():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-        
-          
+              
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))  
     app.run(host='0.0.0.0', port=port)

@@ -1,377 +1,990 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>LegalEagle</title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<head>
+  <title>LegalEagle</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Nunito+Sans:200,300,400,700,900|Oswald:400,700"> 
-    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/icomoon/style.css') }}">
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/magnific-popup.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.theme.default.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/mediaelementplayer.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/animate.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/flaticon/font/flaticon.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/fl-bigmug-line.css') }}">
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/aos.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<style>
-.custom-modal-overlay {
-  position: fixed;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.4);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity 0.3s ease, visibility 0.3s ease;
-}
-
-.custom-modal-overlay.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-.custom-modal {
-  background: #fff;
-  border-radius: 16px;
-  width: 90%;
-  max-width: 420px;
-  padding: 2rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-  text-align: center;
-  animation: fadeInUp 0.3s ease;
-}
-
-@keyframes fadeInUp {
-  0% {
-    opacity: 0;
-    transform: translateY(25px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.custom-modal-icon {
-  font-size: 2.8rem;
-  color: #ce902b;
-  margin-bottom: 1rem;
-}
-
-.custom-modal-title {
-  font-size: 1.7rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-  color: #1a2a3a;
-}
-
-.custom-modal-body {
-  font-size: 1rem;
-  color: #555;
-  margin-bottom: 1.8rem;
-}
-
-.custom-modal-btn {
-  background: #1a2a3a;
-  color: white;
-  padding: 0.6rem 1.4rem;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.custom-modal-btn:hover {
-  background: #ce902b;
-  color: #1a2a3a;
-}
-</style>
-  </head>
-  <body>
-<!-- Welcome Modal -->
-<div class="custom-modal-overlay" id="welcomeModal">
-  <div class="custom-modal">
-    <div class="custom-modal-header">
-      <div class="custom-modal-icon"><i class="fas fa-handshake"></i></div>
-      <h3 class="custom-modal-title">Welcome, Lawyer!</h3>
-    </div>
-    <div class="custom-modal-body">
-      <p>You’re successfully logged in to LegalEagle AI.</p>
-    </div>
-    <div class="custom-modal-footer">
-      <button class="custom-modal-btn" id="welcomeModalClose">Get Started</button>
-    </div>
-  </div>
-</div>
-
-<!-- Logout Modal -->
-<div class="custom-modal-overlay" id="logoutModal">
-  <div class="custom-modal">
-    <div class="custom-modal-header">
-      <div class="custom-modal-icon"><i class="fas fa-sign-out-alt"></i></div>
-      <h3 class="custom-modal-title">Logged Out</h3>
-    </div>
-    <div class="custom-modal-body">
-      <p>You have been successfully logged out.</p>
-    </div>
-    <div class="custom-modal-footer">
-      <button class="custom-modal-btn" id="logoutModalClose">Close</button>
-    </div>
-  </div>
-</div>
-
-<!-- Profile Update Modal -->
-<div class="custom-modal-overlay" id="profileUpdatedModal">
-  <div class="custom-modal">
-    <div class="custom-modal-header">
-      <div class="custom-modal-icon"><i class="fas fa-check-circle"></i></div>
-      <h3 class="custom-modal-title">Profile Updated</h3>
-    </div>
-    <div class="custom-modal-body">
-      <p>Your profile was successfully updated.</p>
-    </div>
-    <div class="custom-modal-footer">
-      <button class="custom-modal-btn" id="profileUpdatedModalClose">OK</button>
-    </div>
-  </div>
-</div>
-
-    <div class="site-navbar mt-4">
-        <div class="row d-flex justify-content-between align-items-center" style="margin-left: 8% ; margin-right: 8%">
-            <div class="col-auto">
-                <h1 class="mb-0">
-                    <a href="{{ url_for('index') }}" class="h2 mb-0" style="color: black;">
-                        <strong>LegalEagle AI<span style="color: #ce902b;" >.</span></strong>
-                    </a>
-                </h1>
-            </div>
-        </div>
-    </div>
-    
-    <div class="container">
-        <div class="sidebar">
-            <input type="file" id="profilePicInput" accept="image/*" hidden>
-            <img id="profilePic" class="profile-pic" src="static/images/default-avatar.png" alt="Profile Picture">
-            <h2 id="lawyerName">Loading...</h2>
-            <p id="lawyerEmail">Loading...</p>
-            <p>Bar Council ID: <span id="barCouncilID">Loading...</span></p>
-    
-            <div class="sidebar-menu">
-                <div class="menu-item" onclick="openEditProfile()">
-                    <span>Edit Profile</span><span class="icon">✏️</span>
-                </div>
-                <div class="menu-item" id="logout" >
-                    <span>Logout</span><span class="icon">ᯓ🏃🏻‍♀️‍➡️</span>
-                </div>
-            </div>
-            <!-- In the sidebar menu -->
-            
-            <!--<div class="menu-item" onclick="location.href='/lawyer'">
-                <span>My Appointments</span><span class="icon">📅</span>
-            </div>-->  
-            
-            <button class="btn btn-primary" style="background-color: rgb(0, 41, 107);" onclick="location.href='{{ url_for('lawyer_appointment_detail') }}'">
-                Case Tracking
-            </button>           
-        </div>
-    
-        <div class="main-content">
-            <div class="content-section">
-                <h3>Personal Information</h3>
-                <div class="content-grid">
-                    <div class="info-card">
-                        <strong>Contact No.:</strong> 
-                        <span id="displayContact">Not Provided</span>
-                    </div>
-                    <div class="info-card">
-                        <strong>Address:</strong> 
-                        <span id="displayAddress">Not Provided</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="content-section">
-                <h3>Information on Firm</h3>
-                <div class="content-grid">
-                <div class="info-card"><strong>Firm Name:</strong> <span id="displayFirmName">Not Provided</span></div>
-                <div class="info-card"><strong>Firm Size:</strong> <span id="displayFirmSize">Not Provided</span></div>
-                <div class="info-card"><strong>Affiliation:</strong> <span id="displayAffiliation">Not Provided</span></div>
-                </div>
-            <div class="content-section">
-            <h3>Professional Information</h3>
-            <div class="content-grid">
-            <div class="info-card"><strong>Practice Area:</strong> <span id="displayPracticeArea">Not Provided</span></div>
-            <div class="info-card"><strong>Designation:</strong> <span id="displayDesignation">Not Provided</span></div>
-            <div class="info-card"><strong>Years of Experience:</strong> <span id="displayExperience">Not Provided</span></div>
-            <div class="info-card"><strong>Successful Cases:</strong> <span id="displayCases">Not Provided</span></div>
-            <div class="info-card"><strong>Nominal Fees:</strong> <span id="displayFees">Not Provided</span></div>
-        </div>
-    </div>
-    
-    <!-- Edit Profile Modal -->
-    <div id="editProfileModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeEditProfile()">&times;</span>
-            <form id="editProfileForm">
-                <h3>Personal Information</h3>
-                <label>Name:</label>
-                <input type="text" id="lawyername" required>
-                <label>Email:</label>
-                <input type="email" id="lawyerEmail" disabled>
-                <label>Contact No.:</label>
-                <input type="text" id="contact">
-                <label for="address">Location:</label>
-                    <select id="address">
-                    <option value="">-- Select Location --</option>
-                    <option value="Ahmedabad">Ahmedabad</option>
-                    <option value="Bangalore">Bangalore</option>
-                    <option value="Chennai">Chennai</option>
-                    <option value="Delhi">Delhi</option>
-                    <option value="Hyderabad">Hyderabad</option>
-                    <option value="Jaipur">Jaipur</option>
-                    <option value="Kolkata">Kolkata</option>
-                    <option value="Lucknow">Lucknow</option>
-                    <option value="Mumbai">Mumbai</option>
-                    <option value="Pune">Pune</option>
-                    </select>
-    
-                <h3>Information on Firm</h3>
-                <label>Firm Name:</label>
-                <input type="text" id="firmName">
-                <label>Firm Size:</label>
-                <input type="text" id="firmSize">
-                <label for="affiliation">Affiliation:</label>
-                    <select id="affiliation">
-                    <option value="">-- Select Affiliation --</option>
-                    <option value="District Court">District Court</option>
-                    <option value="Supreme Court of India">Supreme Court of India</option>
-                    <option value="High Court">High Court</option>
-                    <option value="Bar Council of India">Bar Council of India</option>
-                    </select>
-    
-                <h3>Professional Information</h3>
-                <label for="practiceArea">Practice Area:</label>
-                    <select id="practiceArea">
-                    <option value="">-- Select Practice Area --</option>
-                    <option value="Banking & Finance Law">Banking & Finance Law</option>
-                    <option value="Civil Litigation">Civil Litigation</option>
-                    <option value="Constitutional Law">Constitutional Law</option>
-                    <option value="Corporate Law">Corporate Law</option>
-                    <option value="Criminal Law">Criminal Law</option>
-                    <option value="Cyber Law">Cyber Law</option>
-                    <option value="Employment & Labor Law">Employment & Labor Law</option>
-                    <option value="Environmental Law">Environmental Law</option>
-                    <option value="Family Law">Family Law</option>
-                    <option value="Human Rights Law">Human Rights Law</option>
-                    <option value="Immigration Law">Immigration Law</option>
-                    <option value="Intellectual Property (IP) Law">Intellectual Property (IP) Law</option>
-                    <option value="Personal Injury Law">Personal Injury Law</option>
-                    <option value="Real Estate Law">Real Estate Law</option>
-                    <option value="Tax Law">Tax Law</option>
-                    </select>
-
-                <label for="designation">Designation:</label>
-                    <select id="designation">
-                      <option value="Senior Associate">Senior Associate</option>
-                      <option value="Legal Advisor">Legal Advisor</option>
-                      <option value="Senior Advocate">Senior Advocate</option>
-                      <option value="Independent Legal Consultant">Independent Legal Consultant</option>
-                      <option value="Solicitor">Solicitor</option>
-                      <option value="Advocate">Advocate</option>
-                      <option value="Counsel">Counsel</option>
-                      <option value="Legal Aid Lawyer">Legal Aid Lawyer</option>
-                      <option value="Managing Partner">Managing Partner</option>
-                      <option value="Managing Associate">Managing Associate</option>
-                      <option value="Of Counsel">Of Counsel</option>
-                      <option value="Non-Equity Partner">Non-Equity Partner</option>
-                      <option value="Principal Associate">Principal Associate</option>
-                      <option value="In-House Counsel">In-House Counsel</option>
-                      <option value="Government Counsel">Government Counsel</option>
-                      <option value="Junior Associate / Associate">Junior Associate / Associate</option>
-                    </select>
-                <label>Years of Experience:</label>
-                <input type="number" id="experience">
-                <label>Successful Cases:</label>
-                <input type="number" id="cases">
-                <label>Nominal Fees:</label>
-                <input type="text" id="fees">
-                
-                <button type="submit">Save Changes</button>
-            </form>
-        </div>
-    </div>
-
-    <script type="module" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
-    <script>
-        // After fetching or setting the lawyer's name dynamically
-        const lawyerName = document.getElementById("lawyerName").innerText;
-        if (lawyerName && lawyerName !== "Loading...") {
-            localStorage.setItem("lawyerName", lawyerName);
-        }
-      const indexUrl = "{{ url_for('index') }}";
-        window.firebaseConfig = {
-            apiKey: "{{ firebase_api_key }}",
-            authDomain: "{{ firebase_auth_domain }}",
-            projectId: "{{ firebase_project_id }}",
-            storageBucket: "{{ firebase_storage_bucket }}",
-            messagingSenderId: "{{ firebase_messaging_sender_id }}",
-            appId: "{{ firebase_app_id }}"
-        };
-
-    </script>
-<script>
-  // Welcome Modal (only once per session)
-  window.addEventListener("DOMContentLoaded", () => {
-    const welcomeModal = document.getElementById("welcomeModal");
-    const logoutModal = document.getElementById("logoutModal");
-    const profileUpdatedModal = document.getElementById("profileUpdatedModal");
-
-    // Show Welcome once per session
-    if (!sessionStorage.getItem("welcomeShown")) {
-      welcomeModal.classList.add("show");
-      sessionStorage.setItem("welcomeShown", "true");
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --cream: #F5F0E6;
+      --taupe: #D8C4B6;
+      --sage: #A3B18A;
+      --slate: #3A5A40;
+      --mauve: #B5838D;
+      --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    document.getElementById("welcomeModalClose")?.addEventListener("click", () => {
-      welcomeModal.classList.remove("show");
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: #333;
+      background-color: var(--cream);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Decorative Background Elements */
+    .bg-pattern {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(163, 177, 138, 0.05) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(181, 131, 141, 0.05) 0%, transparent 20%);
+      opacity: 0.6;
+    }
+
+    .floating-shapes {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .shape {
+      position: absolute;
+      opacity: 0.1;
+      animation: float 25s infinite linear;
+    }
+
+    .shape-1 {
+      width: 300px;
+      height: 300px;
+      border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+      background-color: var(--slate);
+      top: 10%;
+      left: 5%;
+      animation-delay: 0s;
+    }
+
+    .shape-2 {
+      width: 400px;
+      height: 400px;
+      border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+      background-color: var(--mauve);
+      bottom: 10%;
+      right: 5%;
+      animation-delay: 5s;
+    }
+
+    .shape-3 {
+      width: 200px;
+      height: 200px;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      background-color: var(--sage);
+      top: 60%;
+      left: 30%;
+      animation-delay: 10s;
+    }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) rotate(0deg); }
+      25% { transform: translate(50px, 50px) rotate(5deg); }
+      50% { transform: translate(0, 100px) rotate(0deg); }
+      75% { transform: translate(-50px, 50px) rotate(-5deg); }
+      100% { transform: translate(0, 0) rotate(0deg); }
+    }
+
+    /* Profile Section */
+    .profile-section {
+      background: rgba(246, 230, 191, 0.25);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+      transition: var(--transition);
+    }
+
+    .profile-section:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-pic {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--sage);
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-pic:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .lawyer-name {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      color: var(--slate);
+      margin-top: 1rem;
+    }
+
+    .lawyer-email {
+      color: var(--mauve);
+      font-weight: 500;
+    }
+
+    .success-rate {
+      background: rgba(163, 177, 138, 0.2);
+      border-radius: 20px;
+      padding: 0.5rem 1rem;
+      display: inline-block;
+      margin-top: 0.5rem;
+      font-weight: 600;
+      color: var(--slate);
+      border: 1px solid rgba(163, 177, 138, 0.3);
+    }
+
+    /* Info Cards */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .info-card {
+      background: rgba(187, 118, 99, 0.25);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+      transition: var(--transition);
+      animation: fadeInUp 0.5s ease-out forwards;
+      opacity: 0;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .info-card:hover {
+      transform: translateY(-5px) rotate(1deg);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: var(--sage);
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-value {
+      color: var(--slate);
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    /* Section Titles */
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      color: var(--slate);
+      position: relative;
+      margin: 2rem 0 1.5rem;
+      padding-bottom: 0.5rem;
+    }
+
+    .section-title:after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 70px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--sage), var(--taupe));
+      border-radius: 3px;
+      transition: var(--transition);
+    }
+
+    .section-title:hover:after {
+      width: 100px;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      border: none;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: var(--transition);
+      box-shadow: 0 5px 15px rgba(163, 177, 138, 0.3);
+      background: linear-gradient(135deg, var(--slate), #4a6f5a);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(58, 90, 64, 0.3);
+      color: white;
+    }
+    /* Menu Buttons */
+    .sidebar-menu {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .btn-menu {
+      background: rgba(245, 240, 230, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 1rem 1.5rem;
+      border: 1px solid rgba(216, 196, 182, 0.5);
+      color: var(--slate);
+      font-weight: 600;
+      text-align: left;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-menu i {
+      font-size: 1.1rem;
+      transition: var(--transition);
+    }
+
+    .btn-menu:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      border-color: rgba(163, 177, 138, 0.5);
+    }
+
+    .btn-menu:hover i {
+      transform: translateX(3px);
+    }
+
+    /* Specific button colors */
+    .btn-menu:nth-child(1) { /* Edit Profile */
+      background: linear-gradient(135deg, rgba(163, 177, 138, 0.1), rgba(163, 177, 138, 0.2));
+      border-left: 4px solid var(--sage);
+    }
+
+    .btn-menu:nth-child(1):hover {
+      background: linear-gradient(135deg, rgba(163, 177, 138, 0.2), rgba(163, 177, 138, 0.3));
+    }
+
+    .btn-menu:nth-child(2) { /* Case Tracking */
+      background: linear-gradient(135deg, rgba(181, 131, 141, 0.1), rgba(181, 131, 141, 0.2));
+      border-left: 4px solid var(--mauve);
+    }
+
+    .btn-menu:nth-child(2):hover {
+      background: linear-gradient(135deg, rgba(181, 131, 141, 0.2), rgba(181, 131, 141, 0.3));
+    }
+
+    .btn-logout { /* Logout */
+      background: linear-gradient(135deg, rgba(181, 131, 141, 0.1), rgba(181, 131, 141, 0.2));
+      border-left: 4px solid #e74a3b;
+    }
+
+    .btn-logout:hover {
+      background: linear-gradient(135deg, rgba(181, 131, 141, 0.2), rgba(181, 131, 141, 0.3));
+    }
+
+    /* Add this to your existing CSS section */
+    .btn {
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border: none;
+      border-radius: 12px;
+      padding: 0.75rem 1.75rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn i {
+      margin-right: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .btn:hover i {
+      transform: translateX(3px);
+    }
+
+    /* Case Tracking Button Special Style */
+    .btn[onclick*="lawyer_appointment_detail"] {
+      background: linear-gradient(135deg, var(--mauve), #c895a7);
+    }
+
+    .btn[onclick*="lawyer_appointment_detail"]:hover {
+      box-shadow: 0 8px 25px rgba(181, 131, 141, 0.3);
+    }
+
+    /* Logout Button Special Style */
+    .btn#logout {
+      background: linear-gradient(135deg, #9e6d7d, var(--mauve));
+    }
+
+    .btn#logout:hover {
+      box-shadow: 0 8px 25px rgba(181, 131, 141, 0.3);
+    }
+
+    /* Edit Profile Button Special Style */
+    .btn[onclick="openEditProfile()"] {
+      background: linear-gradient(135deg, var(--sage), #8fa67a);
+    }
+
+    .btn[onclick="openEditProfile()"]:hover {
+      box-shadow: 0 8px 25px rgba(163, 177, 138, 0.3);
+    }
+
+    /* Modal Styles */
+    .modal-content {
+      border-radius: 16px;
+      border: none;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+      background: rgba(245, 240, 230, 0.95);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      transform: scale(0.95);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .modal.show .modal-content {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .modal-header {
+      border-bottom: 1px solid rgba(51, 51, 51, 0.1);
+      background: rgba(245, 240, 230, 0.8);
+      padding: 1.5rem;
+    }
+
+    .modal-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      color: var(--slate);
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+    }
+
+    /* Edit Profile Modal Styles */
+    .modal-lg {
+      max-width: 800px;
+    }
+
+    .form-section {
+      background: rgba(245, 240, 230, 0.7);
+      backdrop-filter: blur(5px);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(216, 196, 182, 0.4);
+    }
+
+    .section-header {
+      font-family: 'Playfair Display', serif;
+      color: var(--slate);
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid rgba(163, 177, 138, 0.3);
+      display: flex;
+      align-items: center;
+    }
+
+    .input-group-text {
+      height: 50px;
+      background-color: rgba(216, 196, 182, 0.3);
+      border: none;
+      color: var(--slate);
+      min-width: 40px;
+      justify-content: center;
+    }
+
+/* Save Button */
+    .btn-save {
+      background: linear-gradient(135deg, var(--sage), #8fa67a);
+      color: white;
+      padding: 0.75rem 2rem;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: var(--transition);
+      box-shadow: 0 5px 15px rgba(163, 177, 138, 0.3);
+      border: none;
+    }
+
+    .btn-save:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(163, 177, 138, 0.4);
+      color: white;
+    }
+
+    /* Cancel Button */
+    .btn-cancel {
+      background: rgba(245, 240, 230, 0.9);
+      color: var(--slate);
+      padding: 0.75rem 2rem;
+      border-radius: 12px;
+      font-weight: 600;
+      transition: var(--transition);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      border: 1px solid rgba(216, 196, 182, 0.5);
+    }
+
+    .btn-cancel:hover {
+      background: rgba(216, 196, 182, 0.3);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .form-section {
+        padding: 1rem;
+      }
+      
+      .section-header {
+        font-size: 1rem;
+      }
+      
+      .btn-save, .btn-cancel {
+        padding: 0.6rem 1.5rem;
+        width: 100%;
+      }
+      
+      .btn-cancel {
+        margin-top: 0.5rem;
+        margin-left: 0 !important;
+      }
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: var(--slate);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-control, .form-select {
+      background: rgba(216, 196, 182, 0.3);
+      border: 1px solid rgba(250, 248, 246, 1);
+      border-radius: 8px !important;
+      padding: 0.75rem 1rem;
+      margin-bottom: 1.5rem;
+      transition: var(--transition);
+    }
+
+    .form-control:focus, .form-select:focus {
+      background: rgba(255, 255, 255, 0.9);
+      border-color: var(--sage);
+      box-shadow: 0 0 0 0.25rem rgba(163, 177, 138, 0.2);
+    }
+
+    /* Welcome Modal */
+    .welcome-modal {
+      background: rgba(245, 240, 230, 0.95);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      max-width: 500px;
+      padding: 2rem;
+      text-align: center;
+      animation: fadeInUp 0.3s ease-out;
+    }
+
+    .welcome-icon {
+      font-size: 3rem;
+      color: var(--sage);
+      margin-bottom: 1rem;
+    }
+
+    .welcome-title {
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      color: var(--slate);
+      margin-bottom: 1rem;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .profile-section {
+        padding: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Decorative Background Elements -->
+  <div class="bg-pattern"></div>
+  <div class="floating-shapes">
+    <div class="shape shape-1"></div>
+    <div class="shape shape-2"></div>
+    <div class="shape shape-3"></div>
+  </div>
+
+  <!-- Welcome Modal -->
+  <div class="modal fade" id="welcomeModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="welcome-modal">
+        <div class="welcome-icon">
+          <i class="fas fa-handshake"></i>
+        </div>
+        <h3 class="welcome-title">Welcome, Lawyer!</h3>
+        <p>You're successfully logged in to LegalEagle AI.</p>
+        <button class="btn btn-primary mt-3" id="welcomeModalClose">
+          Get Started
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logout Modal -->
+  <div class="modal fade" id="logoutModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="welcome-modal">
+        <div class="welcome-icon">
+          <i class="fas fa-sign-out-alt"></i>
+        </div>
+        <h3 class="welcome-title">Logged Out</h3>
+        <p>You have been successfully logged out.</p>
+        <button class="btn btn-primary mt-3" id="logoutModalClose">
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Update Modal -->
+  <div class="modal fade" id="profileUpdatedModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="welcome-modal">
+        <div class="welcome-icon">
+          <i class="fas fa-check-circle"></i>
+        </div>
+        <h3 class="welcome-title">Profile Updated</h3>
+        <p>Your profile was successfully updated.</p>
+        <button class="btn btn-primary mt-3" id="profileUpdatedModalClose">
+          OK
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-lg-4">
+        <div class="profile-section text-center mb-4">
+          <input type="file" id="profilePicInput" accept="image/*" hidden>
+          <img id="profilePic" class="profile-pic" src="static/images/default-avatar.png" alt="Profile Picture">
+          <h2 id="lawyerName" class="lawyer-name">Loading...</h2>
+          <p id="lawyerEmail" class="lawyer-email">Loading...</p>
+          <p>Bar Council ID: <span id="barCouncilID">Loading...</span></p>
+          <div id="successRate" class="success-rate">Success Rate: Calculating...</div>
+          <div class="sidebar-menu">
+            <!-- Edit Profile Button -->
+            <button class="btn btn-menu" onclick="openEditProfile()">
+              <i class="fas fa-user-edit me-2"></i>
+              <span>Edit Profile</span>
+            </button>
+            <!-- Case Tracking Button -->
+            <button class="btn btn-menu" onclick="location.href='{{ url_for('lawyer_appointment_detail') }}'">
+              <i class="fas fa-folder-open me-2"></i>
+              <span>Case Tracking</span>
+            </button>
+            <!-- Logout Button -->
+            <button class="btn btn-menu btn-logout" id="logout">
+              <i class="fas fa-sign-out-alt me-2"></i>
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-8">
+        <h3 class="section-title">Personal Information</h3>
+        <div class="info-grid">
+          <div class="info-card" style="animation-delay: 0.1s">
+            <div class="info-label">Contact No.</div>
+            <div id="displayContact" class="info-value">Not Provided</div>
+          </div>
+          <div class="info-card" style="animation-delay: 0.2s">
+            <div class="info-label">Address</div>
+            <div id="displayAddress" class="info-value">Not Provided</div>
+          </div>
+        </div>
+
+        <h3 class="section-title">Firm Information</h3>
+        <div class="info-grid">
+          <div class="info-card" style="animation-delay: 0.1s">
+            <div class="info-label">Firm Name</div>
+            <div id="displayFirmName" class="info-value">Not Provided</div>
+          </div>
+          <div class="info-card" style="animation-delay: 0.2s">
+            <div class="info-label">Firm Size</div>
+            <div id="displayFirmSize" class="info-value">Not Provided</div>
+          </div>
+          <div class="info-card" style="animation-delay: 0.3s">
+            <div class="info-label">Affiliation</div>
+            <div id="displayAffiliation" class="info-value">Not Provided</div>
+          </div>
+        </div>
+
+        <h3 class="section-title">Professional Information</h3>
+        <div class="info-grid">
+          <div class="info-card" style="animation-delay: 0.1s">
+            <div class="info-label">Practice Area</div>
+            <div id="displayPracticeArea" class="info-value">Not Provided</div>
+          </div>
+          <div class="info-card" style="animation-delay: 0.2s">
+            <div class="info-label">Designation</div>
+            <div id="displayDesignation" class="info-value">Not Provided</div>
+          </div>
+          <div class="info-card" style="animation-delay: 0.3s">
+            <div class="info-label">Experience</div>
+            <div id="displayExperience" class="info-value">Not Provided</div>
+          </div>
+          <div class="info-card" style="animation-delay: 0.4s">
+            <div class="info-label">Total Cases</div>
+            <div id="displayTotalCases" class="info-value">Not Provided</div>
+          </div>
+          <div class="info-card" style="animation-delay: 0.5s">
+            <div class="info-label">Successful Cases</div>
+            <div id="displayCases" class="info-value">Not Provided</div>
+          </div>
+          <div class="info-card" style="animation-delay: 0.6s">
+            <div class="info-label">Nominal Fees</div>
+            <div id="displayFees" class="info-value">Not Provided</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title"><i class="fas fa-user-edit me-2"></i>Edit Profile</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form id="editProfileForm">
+            <div class="row g-4">
+              <!-- Personal Information Section -->
+              <div class="col-md-6">
+                <div class="form-section">
+                  <h6 class="section-header">
+                    <i class="fas fa-user-circle me-2"></i>Personal Information
+                  </h6>
+                  <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-user"></i></span>
+                      <input type="text" class="form-control" id="lawyername" readonly>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                      <input type="email" class="form-control" id="lawyerEmail" readonly>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Contact Number</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-phone"></i></span>
+                      <input type="tel" class="form-control" id="contact" placeholder="+91">
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Location</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-map-marker-alt"></i></span>
+                      <select class="form-select" id="address">
+                        <option value="">Select your city</option>
+                        <option value="Ahmedabad">Ahmedabad</option>
+                        <option value="Bangalore">Bangalore</option>
+                        <option value="Chennai">Chennai</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Hyderabad">Hyderabad</option>
+                        <option value="Jaipur">Jaipur</option>
+                        <option value="Kolkata">Kolkata</option>
+                        <option value="Lucknow">Lucknow</option>
+                        <option value="Mumbai">Mumbai</option>
+                        <option value="Pune">Pune</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Firm Information Section -->
+              <div class="col-md-6">
+                <div class="form-section">
+                  <h6 class="section-header">
+                    <i class="fas fa-briefcase me-2"></i>Firm Information
+                  </h6>
+                  <div class="mb-3">
+                    <label class="form-label">Firm Name</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-landmark"></i></span>
+                      <input type="text" class="form-control" id="firmName" placeholder="Your firm name">
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Firm Size</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-users"></i></span>
+                      <select class="form-select" id="firmSize">
+                        <option value="">Select size</option>
+                        <option value="Solo Practitioner">Solo Practitioner</option>
+                        <option value="2-5 Lawyers">2-5 Lawyers</option>
+                        <option value="6-10 Lawyers">6-10 Lawyers</option>
+                        <option value="11-20 Lawyers">11-20 Lawyers</option>
+                        <option value="21-50 Lawyers">21-50 Lawyers</option>
+                        <option value="50+ Lawyers">50+ Lawyers</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Affiliation</label>
+                    <div class="input-group">
+                      <span class="input-group-text"><i class="fas fa-gavel"></i></span>
+                      <select class="form-select" id="affiliation">
+                        <option value="">Select affiliation</option>
+                        <option value="District Court">District Court</option>
+                        <option value="Supreme Court of India">Supreme Court of India</option>
+                        <option value="High Court">High Court</option>
+                        <option value="Bar Council of India">Bar Council of India</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Professional Information Section -->
+              <div class="col-12">
+                <div class="form-section">
+                  <h6 class="section-header">
+                    <i class="fas fa-chart-line me-2"></i>Professional Information
+                  </h6>
+                  <div class="row g-3">
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label class="form-label">Practice Area</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-balance-scale"></i></span>
+                          <select class="form-select" id="practiceArea">
+                            <option value="">Select your specialty</option>
+                            <option value="Banking & Finance Law">Banking & Finance Law</option>
+                            <option value="Civil Litigation">Civil Litigation</option>
+                            <option value="Corporate Law">Corporate Law</option>
+                            <option value="Criminal Law">Criminal Law</option>
+                            <option value="Family Law">Family Law</option>
+                            <option value="Intellectual Property">Intellectual Property</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-6">
+                      <div class="mb-3">
+                        <label class="form-label">Designation</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
+                          <select class="form-select" id="designation">
+                            <option value="">Select your position</option>
+                            <option value="Senior Advocate">Senior Advocate</option>
+                            <option value="Advocate">Advocate</option>
+                            <option value="Legal Consultant">Legal Consultant</option>
+                            <option value="Partner">Partner</option>
+                            <option value="Associate">Associate</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="mb-3">
+                        <label class="form-label">Experience (Years)</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                          <input type="number" class="form-control" id="experience" placeholder="0">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="mb-3">
+                        <label class="form-label">Total Cases</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-folder-open"></i></span>
+                          <input type="number" class="form-control" id="totalCases" placeholder="0">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4">
+                      <div class="mb-3">
+                        <label class="form-label">Successful Cases</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-trophy"></i></span>
+                          <input type="number" class="form-control" id="cases" placeholder="0">
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12">
+                      <div class="mb-3">
+                        <label class="form-label">Nominal Fees (₹)</label>
+                        <div class="input-group">
+                          <span class="input-group-text"><i class="fas fa-rupee-sign"></i></span>
+                          <input type="text" class="form-control" id="fees" placeholder="Consultation fees">
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="text-center mt-4">
+              <button type="submit" class="btn btn-save">
+                <i class="fas fa-save me-2"></i>Save Profile
+              </button>
+              <button type="button" class="btn btn-cancel ms-3" data-bs-dismiss="modal">
+                <i class="fas fa-times me-2"></i>Cancel
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+  <script>
+    // After fetching or setting the lawyer's name dynamically
+    const lawyerName = document.getElementById("lawyerName").innerText;
+    if (lawyerName && lawyerName !== "Loading...") {
+        localStorage.setItem("lawyerName", lawyerName);
+    }
+    
+    const indexUrl = "{{ url_for('index') }}";
+    window.firebaseConfig = {
+        apiKey: "{{ firebase_api_key }}",
+        authDomain: "{{ firebase_auth_domain }}",
+        projectId: "{{ firebase_project_id }}",
+        storageBucket: "{{ firebase_storage_bucket }}",
+        messagingSenderId: "{{ firebase_messaging_sender_id }}",
+        appId: "{{ firebase_app_id }}"
+    };
+
+    // Calculate success rate
+    function calculateSuccessRate() {
+      const successfulCases = parseInt(document.getElementById("displayCases").textContent) || 0;
+      const totalCases = parseInt(document.getElementById("displayTotalCases").textContent) || 1;
+      const successRate = (successfulCases / totalCases * 100).toFixed(1);
+      document.getElementById("successRate").textContent = `Success Rate: ${successRate}%`;
+    }
+
+    // Show welcome modal once per session
+    document.addEventListener("DOMContentLoaded", function() {
+      const welcomeModal = new bootstrap.Modal(document.getElementById('welcomeModal'));
+      const logoutModal = new bootstrap.Modal(document.getElementById('logoutModal'));
+      const profileUpdatedModal = new bootstrap.Modal(document.getElementById('profileUpdatedModal'));
+      const editProfileModal = new bootstrap.Modal(document.getElementById('editProfileModal'));
+
+      if (!sessionStorage.getItem("welcomeShown")) {
+        welcomeModal.show();
+        sessionStorage.setItem("welcomeShown", "true");
+      }
+
+      document.getElementById("welcomeModalClose")?.addEventListener("click", () => {
+        welcomeModal.hide();
+      });
+
+      document.getElementById("logoutModalClose")?.addEventListener("click", () => {
+        logoutModal.hide();
+        window.location.href = "/";
+      });
+
+      document.getElementById("profileUpdatedModalClose")?.addEventListener("click", () => {
+        profileUpdatedModal.hide();
+      });
+
+      // Set up logout button
+      document.getElementById("logout").addEventListener("click", function() {
+        logoutModal.show();
+      });
+
+      // Modal functions
+      window.openEditProfile = function() {
+          const modal = new bootstrap.Modal(document.getElementById("editProfileModal"));
+          modal.show();
+      };
+
+      window.closeEditProfile = function() {
+        editProfileModal.hide();
+      };
     });
 
-    document.getElementById("logoutModalClose")?.addEventListener("click", () => {
-      logoutModal.classList.remove("show");
-      window.location.href = "/";
-    });
+    // Replace alert in dashboard.js with this:
+    function showProfileUpdateSuccessModal() {
+      const modal = new bootstrap.Modal(document.getElementById('profileUpdatedModal'));
+      modal.show();
+    }
 
-    document.getElementById("profileUpdatedModalClose")?.addEventListener("click", () => {
-      profileUpdatedModal.classList.remove("show");
-    });
-  });
-
-  // Replace alert in dashboard.js with this:
-  function showProfileUpdateSuccessModal() {
-    document.getElementById("profileUpdatedModal").classList.add("show");
-  }
-
-  function showLogoutModal() {
-    document.getElementById("logoutModal").classList.add("show");
-  }
-</script>
-
-
-    <script type="module" src="{{ url_for('static', filename='js/firebase_Auth.js') }}"></script>   
-    </body>
+    function showLogoutModal() {
+      const modal = new bootstrap.Modal(document.getElementById('logoutModal'));
+      modal.show();
+    }
+  </script>
+  <script type="module" src="{{ url_for('static', filename='js/firebase_Auth.js') }}"></script>   
+</body>
 </html>

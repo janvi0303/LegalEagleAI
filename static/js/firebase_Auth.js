@@ -9,6 +9,11 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const auth = getAuth(app);
 
+// Define URLs
+const afterloginUrl= "/afterlogin";
+const indexUrl = "/"; // Change to your actual homepage URL
+
+
 // Function to show Bootstrap modal messages
 function showModal(message, type = "info", redirectUrl = null) {
     const modalMessage = document.getElementById("modalMessage");

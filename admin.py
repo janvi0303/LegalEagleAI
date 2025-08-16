@@ -388,3 +388,31 @@ def delete_appointment():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+@admin_bp.route('/all_appointments', methods=['GET'])
+def all_appointments():
+    if not session.get("admin_logged_in"):
+        return jsonify({"error": "Unauthorized"}), 403
+    
+    try:
+        appointments_ref = db.reference('bookings')
+        all_bookings = appointments_ref.get() or {}
+        
+        appointments = []
+        for client_email, client_appointments in all_bookings.items():
+            if isinstance(client_appointments, dict):
+                for appt_id, appt in client_appointments.items():
+                    if isinstance(appt, dict):
+                        # Fix the email format if it was stored with comma
+                        fixed_email = client_email.replace(',', '.')
+                        appointments.append({
+                            "appointment_date": appt.get("appointment_date"),
+                            "appointment_time": appt.get("appointment_time"),
+                            "client_name": appt.get("client_name"),
+                            "lawyer_name": appt.get("lawyer_name"),
+                            "bar_council_id": appt.get("Bar_Council_ID", "N/A"),
+                            "client_email": fixed_email
+                        })
+        return jsonify(appointments)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500

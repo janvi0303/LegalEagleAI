@@ -10,6 +10,9 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 const auth = getAuth(app);
 
+// Define URLs
+const indexUrl = "/"; // Change to your actual homepage URL
+const dashboardUrl = "/dashboard.html"; // Change to your actual dashboard URL
 // Load lawyer data from the uploaded dataset
 let lawyerData = [];
 

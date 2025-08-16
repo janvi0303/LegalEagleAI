@@ -74,10 +74,24 @@ function loadLawyerProfile(barCouncilID) {
                 designation: profileData.Designation || "Not Provided",
                 experience: profileData.Years_of_Experience || "Not Provided",
                 cases: profileData.Successful_cases || "Not Provided",
-                fees: profileData.Nominal_fees_per_hearing || "Not Provided"
+                fees: profileData.Nominal_fees_per_hearing || "Not Provided",
+                Total_cases: profileData.Total_cases || "Not Provided" // Add this line
             };
 
             updateDisplayFields(displayData);
+
+            // Update form fields
+            document.getElementById("contact").value = displayData.contact;
+            document.getElementById("address").value = displayData.address;
+            document.getElementById("firmName").value = displayData.firmName;
+            document.getElementById("firmSize").value = displayData.firmSize;
+            document.getElementById("affiliation").value = displayData.affiliation;
+            document.getElementById("practiceArea").value = displayData.practiceArea;
+            document.getElementById("designation").value = displayData.designation;
+            document.getElementById("experience").value = displayData.experience;
+            document.getElementById("totalCases").value = displayData.Total_cases; // Add this line
+            document.getElementById("cases").value = displayData.cases;
+            document.getElementById("fees").value = displayData.fees;
 
             // Update profile picture if available
             if (profileData.profilePicUrl) {
@@ -95,7 +109,8 @@ function loadLawyerProfile(barCouncilID) {
                 designation: "Not Provided",
                 experience: "Not Provided",
                 cases: "Not Provided",
-                fees: "Not Provided"
+                fees: "Not Provided",
+                Total_cases: "Not Provided" // Add this line
             });
         }
     }).catch(error => console.error("Error fetching profile data:", error));
@@ -112,7 +127,8 @@ function updateDisplayFields(data) {
         designation: "displayDesignation",
         experience: "displayExperience",
         cases: "displayCases",
-        fees: "displayFees"
+        fees: "displayFees",
+        Total_cases: "displayTotalCases" // Add this line
     };
 
     for (const [dataKey, elementId] of Object.entries(fieldMap)) {
@@ -121,6 +137,9 @@ function updateDisplayFields(data) {
             element.textContent = data[dataKey] || "Not Provided";
         }
     }
+    
+    // Calculate success rate after updating fields
+    setTimeout(calculateSuccessRate, 500);
 }
 
 // Profile Modal Functions
@@ -160,21 +179,17 @@ editProfileForm.addEventListener("submit", function(event) {
             const barCouncilID = lawyerData.barCouncilID;
             const encodedBarCouncilID = encodeBarCouncilID(barCouncilID);
 
-            // Calculate total cases (successful cases are 60% of total)
-            const successfulCases = parseInt(document.getElementById("cases").value) || 0;
-            const totalCases = Math.round(successfulCases / 0.6);
-
             // Prepare data with EXACT field names as specified
-            const profileData = { // To be updated by admin
+            const profileData = {
                 Lawyer_name: document.getElementById("lawyername").value,
                 Practice_area: document.getElementById("practiceArea").value || "Not Specified",
                 Firm_name: document.getElementById("firmName").value || "Not Specified",
-                Firm_size: parseInt(document.getElementById("firmSize").value) || 0,
+                Firm_size: parseInt(document.getElementById("firmSize").value) || "Not Specified",
                 Target_audience: "General Public",
                 Designation: document.getElementById("designation").value || "Not Specified",
                 Years_of_Experience: parseInt(document.getElementById("experience").value) || 0,
-                Total_cases: totalCases, // Calculated field
-                Successful_cases: successfulCases, // From form input
+                Total_cases: parseInt(document.getElementById("totalCases").value) || 0, // Added this line
+                Successful_cases: parseInt(document.getElementById("cases").value) || 0,
                 Affiliation: document.getElementById("affiliation").value || "Not Specified",
                 Client_reviews: "No reviews yet",
                 Nominal_fees_per_hearing: parseInt(document.getElementById("fees").value) || 0,
@@ -198,7 +213,8 @@ editProfileForm.addEventListener("submit", function(event) {
                 designation: profileData.Designation,
                 experience: profileData.Years_of_Experience,
                 cases: profileData.Successful_cases,
-                fees: profileData.Nominal_fees_per_hearing
+                fees: profileData.Nominal_fees_per_hearing,
+                Total_cases: profileData.Total_cases // Add this line
             });
 
             // Save with EXACT field names
@@ -206,7 +222,7 @@ editProfileForm.addEventListener("submit", function(event) {
             set(profileRef, profileData)
                 .then(() => {
                     closeEditProfile();
-                    document.getElementById("profileUpdatedModal")?.classList.add("show");
+                    showProfileUpdateSuccessModal();
                 })
                 .catch(error => {
                     console.error("Error updating profile:", error);
