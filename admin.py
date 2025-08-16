@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 admin_bp = Blueprint('admin', __name__)
 
 # Firebase Initialization
-cred = credentials.Certificate("config/firebase_admin_config.json")
+cred = credentials.Certificate("/etc/secrets/firebase_admin_config.json")
 firebase_admin.initialize_app(cred, {
     'databaseURL': os.getenv('FIREBASE_DB_URL')
 })
