@@ -16,6 +16,7 @@ transformers==4.48.3
 sentence-transformers==5.1.0
 torch==2.6.0
 scikit-learn==1.7.1
+nltk==3.9.1
 
 # Data handling
 pandas==2.2.3
