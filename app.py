@@ -346,15 +346,16 @@ def fetch_lawyer_profiles():
 def get_zero_shot_classifier():
     return pipeline(
         "zero-shot-classification",
-        model="typeform/distilbert-base-uncased-mnli",
-        device="cpu" 
+        model="valhalla/distilbart-mnli-12-1",  # ✅ lighter model
+        device="cpu"
     )
 
 @lru_cache(maxsize=1)
 def get_sbert_model():
-    model = SentenceTransformer('all-MiniLM-L6-v2', device="cpu")
-    model.to("cpu")  
+    model = SentenceTransformer('paraphrase-MiniLM-L3-v2', device="cpu")  # ✅ lighter SBERT
+    model.to("cpu")
     return model
+
 
 
 # Define practice areas
