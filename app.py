@@ -22,6 +22,9 @@ from check_env import init_mail, send_email
 from case_tracking import case_tracking_bp
 from dotenv import load_dotenv
 from firebase_admin import db
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+from functools import lru_cache
 
 load_dotenv()
 app = Flask(__name__)
@@ -338,8 +341,21 @@ def fetch_lawyer_profiles():
     else:
         return []
 
-# Load a pre-trained model for text classification
-classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
+# Cache lightweight models
+@lru_cache(maxsize=1)
+def get_zero_shot_classifier():
+    return pipeline(
+        "zero-shot-classification",
+        model="typeform/distilbert-base-uncased-mnli",
+        device="cpu" 
+    )
+
+@lru_cache(maxsize=1)
+def get_sbert_model():
+    model = SentenceTransformer('all-MiniLM-L6-v2', device="cpu")
+    model.to("cpu")  
+    return model
+
 
 # Define practice areas
 practice_areas = [
@@ -532,56 +548,130 @@ def lawyer_signup():
 def dashboard():
     return render_template('dashboard.html', **g.firebase_config)
 
-
 def recommend_lawyers(query, min_price=None, max_price=None, sort_order=None, location=None):
-    """Fetch lawyer details from Firebase and recommend based on query."""
-    cleaned_query = preprocess_query(query)
-    if not cleaned_query.strip():
-        raise ValueError("The query is empty after preprocessing.")
+    try:
+        # Step 1: Zero-shot classification
+        classifier = get_zero_shot_classifier()
+        processed_query = preprocess_query(query)
 
-    # Identify practice area using zero-shot classification
-    classification = classifier(cleaned_query, practice_areas)
-    recommended_practice_area = classification['labels'][0]
+        classification = classifier(
+            processed_query,
+            candidate_labels=practice_areas,
+            hypothesis_template="This legal query is about {}."
+        )
 
-    # Fetch all lawyers from Firebase
-    ref = db.reference("lawyers_profile/lawyer_profile")
-    all_lawyers = ref.get() or {}
-    lawyer_list = list(all_lawyers.values())
+        recommended_area = classification['labels'][0]
+        confidence = classification['scores'][0]
 
-    # Filter by practice area
-    recommendations = [
-        lawyer for lawyer in lawyer_list 
-        if lawyer.get("Practice_area") == recommended_practice_area
-    ]
+        # ✅ SBERT fallback if confidence is too low
+        if confidence < 0.4:
+            sbert = get_sbert_model()
+            query_embed = sbert.encode([processed_query])
+            area_embeds = sbert.encode(practice_areas)
+            sims = cosine_similarity(query_embed, area_embeds)
+            best_idx = sims.argmax()
+            recommended_area = practice_areas[best_idx]
+            confidence = sims[0][best_idx]
+        
+        # Step 2: Fetch lawyers
+        ref = db.reference("lawyers_profile/lawyer_profile")
+        all_lawyers = list((ref.get() or {}).values())
 
-    # Filter by price range
-    if min_price is not None and max_price is not None:
-        try:
-            min_price = float(min_price)
-            max_price = float(max_price)
-            recommendations = [
-                lawyer for lawyer in recommendations
-                if min_price <= float(lawyer.get("Nominal_fees_per_hearing", 0)) <= max_price
-            ]
-        except ValueError:
-            pass  # Ignore invalid price inputs
+        # Step 3: Apply early filters (practice area, location, price)
+        filtered_lawyers = []
+        for lawyer in all_lawyers:
+            if lawyer.get("Practice_area") != recommended_area:
+                continue
 
-    # Filter by location
-    if location:
-        recommendations = [
-            lawyer for lawyer in recommendations
-            if location.lower() == lawyer.get("Location", "").lower()
-        ]
+            # Location filter
+            if location and location.lower() != lawyer.get("Location", "").lower():
+                continue
 
-    # Sort recommendations
-    if sort_order == 'low_to_high':
-        recommendations.sort(key=lambda x: float(x.get("Nominal_fees_per_hearing", 0)))
-    elif sort_order == 'high_to_low':
-        recommendations.sort(key=lambda x: float(x.get("Nominal_fees_per_hearing", 0)), reverse=True)
+            # Price filter
+            price = float(lawyer.get("Nominal_fees_per_hearing", 0))
+            if min_price and max_price:
+                try:
+                    if not (float(min_price) <= price <= float(max_price)):
+                        continue
+                except ValueError:
+                    pass
+            
+            filtered_lawyers.append(lawyer)
 
-    return recommendations
+        if not filtered_lawyers:
+            return []
 
+        # Step 4: Semantic similarity (SBERT)
+        sbert = get_sbert_model()
+        query_embed = sbert.encode([query])
 
+        # For normalization of price
+        max_fee = max([float(l.get("Nominal_fees_per_hearing", 0)) for l in filtered_lawyers] or [1])
+
+        recommendations = []
+        for lawyer in filtered_lawyers:
+            lawyer_text = f"{lawyer.get('Lawyer_name', '')} {lawyer.get('Practice_area', '')}"
+            lawyer_embed = sbert.encode([lawyer_text])
+            semantic_score = cosine_similarity(query_embed, lawyer_embed)[0][0]
+
+            # Success rate
+            total_cases = float(lawyer.get("Total_cases", 1))
+            successful_cases = float(lawyer.get("Successful_cases", 0))
+            success_rate = successful_cases / total_cases if total_cases > 0 else 0
+
+            # Price score
+            price = float(lawyer.get("Nominal_fees_per_hearing", 0))
+            price_score = 1 - (price / max_fee) if max_fee > 0 else 0
+
+            # Location match
+            location_bonus = 1.0 if (location and location.lower() == lawyer.get("Location", "").lower()) else 0
+
+            lawyer["match_metrics"] = {
+                "semantic_score": round(semantic_score, 2),
+                "success_rate": round(success_rate, 2),
+                "price_score": round(price_score, 2),
+                "location_match": bool(location_bonus)
+            }
+
+            recommendations.append(lawyer)
+
+        # Step 5: Dynamic ranking logic
+        if sort_order == "low_to_high":
+            recommendations.sort(key=lambda x: float(x.get("Nominal_fees_per_hearing", 0)))
+        elif sort_order == "high_to_low":
+            recommendations.sort(key=lambda x: -float(x.get("Nominal_fees_per_hearing", 0)))
+        else:
+            for lawyer in recommendations:
+                metrics = lawyer["match_metrics"]
+                # Default weight: semantic only
+                combined_score = metrics["semantic_score"]
+
+                # Add price factor if price filter was used
+                if min_price and max_price:
+                    combined_score = 0.7 * metrics["semantic_score"] + 0.3 * metrics["price_score"]
+
+                # Add location factor if location filter was used
+                if location:
+                    combined_score = 0.7 * metrics["semantic_score"] + 0.3 * (1 if metrics["location_match"] else 0)
+
+                # If both price + location used
+                if (min_price and max_price) and location:
+                    combined_score = (
+                        0.6 * metrics["semantic_score"] +
+                        0.2 * metrics["price_score"] +
+                        0.2 * (1 if metrics["location_match"] else 0)
+                    )
+
+                lawyer["match_metrics"]["combined_score"] = round(combined_score, 2)
+
+            recommendations.sort(key=lambda x: -x["match_metrics"]["combined_score"])
+
+        return recommendations[:20]
+
+    except Exception as e:
+        print(f"Recommendation error: {str(e)}")
+        return []
+    
 # Database configuration 
 @app.route('/booking.html')
 def booking():
@@ -650,5 +740,5 @@ def book_appointment():
         return jsonify({"error": str(e)}), 500
               
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)  
+    app.run(host="0.0.0.0", port=5000)  
     
