@@ -19,5 +19,7 @@ new file created to sync entries from postgresql needed to be run in background 
 
 For website Demo visit
 
-https://legaleagleai-ut6e.onrender.com
+https://legaleagleai-ut6e.onrender.com or https://bit.ly/LegalEagleAI-j03j03
+
+
 
