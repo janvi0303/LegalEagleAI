@@ -37,11 +37,17 @@ app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 Session(app)  # ✅ Initialize Session
 
-# With this corrected version:
+# Set NLTK data path before any other NLTK operations
 nltk_data_path = os.path.join(os.path.dirname(__file__), 'nltk_data')
 nltk.data.path.append(nltk_data_path)
-nltk.download('punkt', download_dir=nltk_data_path)
-nltk.download('stopwords', download_dir=nltk_data_path)
+
+# Verify the resources are available
+try:
+    nltk.data.find('tokenizers/punkt')
+    nltk.data.find('corpora/stopwords')
+except LookupError as e:
+    print(f"Critical NLTK resource missing: {str(e)}")
+
 
 # ✅ Register Blueprints
 app.register_blueprint(admin_bp)
