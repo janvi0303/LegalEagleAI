@@ -12,9 +12,6 @@ google-cloud-firestore==2.20.0
 google-cloud-storage==3.0.0
 
 # NLP / AI models
-transformers==4.48.3
-sentence-transformers==5.1.0
-torch==2.6.0
 scikit-learn==1.7.1
 nltk==3.9.1
 
@@ -22,6 +19,8 @@ nltk==3.9.1
 pandas==2.2.3
 numpy==2.0.2
 tqdm==4.67.1
+tenacity==9.1.2
+cohere==5.17.0
 
 # Utilities
 python-dotenv==1.0.1
