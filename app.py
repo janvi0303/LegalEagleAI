@@ -40,6 +40,7 @@ Session(app)  # ✅ Initialize Session
 # Download NLTK resources
 nltk.download('punkt')
 nltk.download('stopwords')
+nltk.download('punkt_tab')
 
 # ✅ Register Blueprints
 app.register_blueprint(admin_bp)
