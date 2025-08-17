@@ -5,7 +5,6 @@ import pandas as pd
 from firebase_admin import db
 from flask import Flask, render_template, request, jsonify, g, session, redirect, url_for, flash
 from flask_session import Session
-from transformers import pipeline
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
 from werkzeug.utils import secure_filename
@@ -22,9 +21,9 @@ from check_env import init_mail, send_email
 from case_tracking import case_tracking_bp
 from dotenv import load_dotenv
 from firebase_admin import db
-from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
-from functools import lru_cache
+import cohere
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 load_dotenv()
 app = Flask(__name__)
@@ -340,23 +339,8 @@ def fetch_lawyer_profiles():
         return list(lawyers.values())  # Convert dictionary values to a list
     else:
         return []
-
-# Cache lightweight models
-@lru_cache(maxsize=1)
-def get_zero_shot_classifier():
-    return pipeline(
-        "zero-shot-classification",
-        model="valhalla/distilbart-mnli-12-1",  # ✅ lighter model
-        device="cpu"
-    )
-
-@lru_cache(maxsize=1)
-def get_sbert_model():
-    model = SentenceTransformer('paraphrase-MiniLM-L3-v2', device="cpu")  # ✅ lighter SBERT
-    model.to("cpu")
-    return model
-
-
+    
+co = cohere.Client(os.getenv('COHERE_API_KEY'))
 
 # Define practice areas
 practice_areas = [
@@ -398,7 +382,6 @@ def extract_text_from_file(file):
 @app.route('/recommend_lawyers', methods=['GET', 'POST'])
 def recommend_lawyers_route():
     lawyer_recommendations = None
-    error_message = None
     sort_order = None
     location = None
 
@@ -423,7 +406,14 @@ def recommend_lawyers_route():
                     if document_text:
                         user_query = document_text
                     else:
-                        error_message = "Failed to extract text from the uploaded document."
+                        return render_template(
+                            'recommend_lawyers.html',
+                            recommended_lawyers=None,
+                            error_message="Failed to extract text from the uploaded document",
+                            unique_locations=unique_locations,
+                            selected_location=location,
+                            sort_order=sort_order
+                        )
             
             # Get the form data
             min_price = request.form.get('min_price')
@@ -440,22 +430,35 @@ def recommend_lawyers_route():
                     sort_order, 
                     location
                 )
-            elif not error_message:
-                error_message = "Please provide a query or upload a document"
+            else:
+                return render_template(
+                    'recommend_lawyers.html',
+                    recommended_lawyers=None,
+                    error_message="Please provide a query or upload a document",
+                    unique_locations=unique_locations,
+                    selected_location=location,
+                    sort_order=sort_order
+                )
 
         except Exception as e:
-            error_message = f"An error occurred: {str(e)}"
-            print(error_message)
+            return render_template(
+                'recommend_lawyers.html',
+                recommended_lawyers=None,
+                error_message=f"An error occurred: {str(e)}",
+                unique_locations=unique_locations,
+                selected_location=location,
+                sort_order=sort_order
+            )
 
     return render_template(
         'recommend_lawyers.html',
         recommended_lawyers=lawyer_recommendations,
-        error_message=error_message,
+        error_message=None,
         unique_locations=unique_locations,
         selected_location=location,
         sort_order=sort_order
     )
-        
+    
 # Configure the API key
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
 if not GOOGLE_API_KEY:
@@ -549,125 +552,104 @@ def lawyer_signup():
 def dashboard():
     return render_template('dashboard.html', **g.firebase_config)
 
+@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10))
+def classify_with_cohere(query, candidate_labels):
+    """Classify query using Cohere's embedding similarity"""
+    try:
+        # Get embeddings for query and labels
+        query_emb = co.embed(texts=[query], model="embed-english-v3.0", input_type="search_query").embeddings[0]
+        label_embs = co.embed(texts=candidate_labels, model="embed-english-v3.0", input_type="classification").embeddings
+        
+        # Calculate cosine similarities
+        similarities = cosine_similarity([query_emb], label_embs)[0]
+        
+        # Pair labels with scores and sort
+        results = sorted(zip(candidate_labels, similarities), key=lambda x: x[1], reverse=True)
+        
+        return {
+            'labels': [r[0] for r in results],
+            'scores': [r[1] for r in results]
+        }
+    except Exception as e:
+        print(f"Cohere classification failed: {str(e)}")
+        raise
+
 def recommend_lawyers(query, min_price=None, max_price=None, sort_order=None, location=None):
     try:
-        # Step 1: Zero-shot classification
-        classifier = get_zero_shot_classifier()
+        # Step 1: Classification with Cohere
         processed_query = preprocess_query(query)
-
-        classification = classifier(
-            processed_query,
-            candidate_labels=practice_areas,
-            hypothesis_template="This legal query is about {}."
-        )
-
+        
+        classification = classify_with_cohere(processed_query, practice_areas)
         recommended_area = classification['labels'][0]
         confidence = classification['scores'][0]
 
-        # ✅ SBERT fallback if confidence is too low
-        if confidence < 0.4:
-            sbert = get_sbert_model()
-            query_embed = sbert.encode([processed_query])
-            area_embeds = sbert.encode(practice_areas)
-            sims = cosine_similarity(query_embed, area_embeds)
-            best_idx = sims.argmax()
-            recommended_area = practice_areas[best_idx]
-            confidence = sims[0][best_idx]
-        
+        # Skip if confidence is too low
+        if confidence < 0.2:
+            return []
+
         # Step 2: Fetch lawyers
         ref = db.reference("lawyers_profile/lawyer_profile")
         all_lawyers = list((ref.get() or {}).values())
 
-        # Step 3: Apply early filters (practice area, location, price)
-        filtered_lawyers = []
-        for lawyer in all_lawyers:
-            if lawyer.get("Practice_area") != recommended_area:
-                continue
-
-            # Location filter
-            if location and location.lower() != lawyer.get("Location", "").lower():
-                continue
-
-            # Price filter
-            price = float(lawyer.get("Nominal_fees_per_hearing", 0))
-            if min_price and max_price:
-                try:
-                    if not (float(min_price) <= price <= float(max_price)):
-                        continue
-                except ValueError:
-                    pass
-            
-            filtered_lawyers.append(lawyer)
+        # Step 3: Apply filters
+        filtered_lawyers = [
+            lawyer for lawyer in all_lawyers
+            if (lawyer.get("Practice_area") == recommended_area and
+                (not location or location.lower() == lawyer.get("Location", "").lower()) and
+                (not min_price or not max_price or 
+                 float(min_price) <= float(lawyer.get("Nominal_fees_per_hearing", 0)) <= float(max_price)))
+        ]
 
         if not filtered_lawyers:
             return []
 
-        # Step 4: Semantic similarity (SBERT)
-        sbert = get_sbert_model()
-        query_embed = sbert.encode([query])
+        # Step 4: Get query embedding
+        try:
+            query_embed = co.embed(texts=[query], model="embed-english-v3.0").embeddings[0]
+        except Exception as e:
+            print(f"Query embedding failed: {str(e)}")
+            return filtered_lawyers[:20]  # Return unfiltered results if embedding fails
 
-        # For normalization of price
+        # Step 5: Score lawyers
         max_fee = max([float(l.get("Nominal_fees_per_hearing", 0)) for l in filtered_lawyers] or [1])
-
-        recommendations = []
+        
         for lawyer in filtered_lawyers:
-            lawyer_text = f"{lawyer.get('Lawyer_name', '')} {lawyer.get('Practice_area', '')}"
-            lawyer_embed = sbert.encode([lawyer_text])
-            semantic_score = cosine_similarity(query_embed, lawyer_embed)[0][0]
+            # Create lawyer description
+            lawyer_text = (
+                f"{lawyer.get('Lawyer_name', '')} specializing in {lawyer.get('Practice_area', '')} "
+                f"in {lawyer.get('Location', '')}. Experience: {lawyer.get('Experience', '')} years. "
+                f"Cases won: {lawyer.get('Successful_cases', 0)}/{lawyer.get('Total_cases', 1)}"
+            )
+            
+            try:
+                lawyer_embed = co.embed(texts=[lawyer_text], model="embed-english-v3.0").embeddings[0]
+                semantic_score = cosine_similarity([query_embed], [lawyer_embed])[0][0]
+            except:
+                semantic_score = 0.5
 
-            # Success rate
-            total_cases = float(lawyer.get("Total_cases", 1))
-            successful_cases = float(lawyer.get("Successful_cases", 0))
-            success_rate = successful_cases / total_cases if total_cases > 0 else 0
-
-            # Price score
+            # Calculate other metrics
             price = float(lawyer.get("Nominal_fees_per_hearing", 0))
-            price_score = 1 - (price / max_fee) if max_fee > 0 else 0
-
-            # Location match
-            location_bonus = 1.0 if (location and location.lower() == lawyer.get("Location", "").lower()) else 0
-
+            success_rate = float(lawyer.get("Successful_cases", 0)) / max(1, float(lawyer.get("Total_cases", 1)))
+            
             lawyer["match_metrics"] = {
                 "semantic_score": round(semantic_score, 2),
                 "success_rate": round(success_rate, 2),
-                "price_score": round(price_score, 2),
-                "location_match": bool(location_bonus)
+                "price_score": 1 - (price / max_fee) if max_fee > 0 else 0,
+                "location_match": location and location.lower() == lawyer.get("Location", "").lower()
             }
 
-            recommendations.append(lawyer)
-
-        # Step 5: Dynamic ranking logic
+        # Step 6: Sort results
         if sort_order == "low_to_high":
-            recommendations.sort(key=lambda x: float(x.get("Nominal_fees_per_hearing", 0)))
+            filtered_lawyers.sort(key=lambda x: float(x.get("Nominal_fees_per_hearing", 0)))
         elif sort_order == "high_to_low":
-            recommendations.sort(key=lambda x: -float(x.get("Nominal_fees_per_hearing", 0)))
+            filtered_lawyers.sort(key=lambda x: -float(x.get("Nominal_fees_per_hearing", 0)))
         else:
-            for lawyer in recommendations:
+            for lawyer in filtered_lawyers:
                 metrics = lawyer["match_metrics"]
-                # Default weight: semantic only
-                combined_score = metrics["semantic_score"]
+                lawyer["match_metrics"]["combined_score"] = metrics["semantic_score"] * 0.7 + metrics["success_rate"] * 0.3
+            filtered_lawyers.sort(key=lambda x: -x["match_metrics"]["combined_score"])
 
-                # Add price factor if price filter was used
-                if min_price and max_price:
-                    combined_score = 0.7 * metrics["semantic_score"] + 0.3 * metrics["price_score"]
-
-                # Add location factor if location filter was used
-                if location:
-                    combined_score = 0.7 * metrics["semantic_score"] + 0.3 * (1 if metrics["location_match"] else 0)
-
-                # If both price + location used
-                if (min_price and max_price) and location:
-                    combined_score = (
-                        0.6 * metrics["semantic_score"] +
-                        0.2 * metrics["price_score"] +
-                        0.2 * (1 if metrics["location_match"] else 0)
-                    )
-
-                lawyer["match_metrics"]["combined_score"] = round(combined_score, 2)
-
-            recommendations.sort(key=lambda x: -x["match_metrics"]["combined_score"])
-
-        return recommendations[:20]
+        return filtered_lawyers[:20]
 
     except Exception as e:
         print(f"Recommendation error: {str(e)}")
