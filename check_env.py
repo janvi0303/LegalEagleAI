@@ -1,30 +1,35 @@
 import os
-from flask_mailman import Mail, EmailMessage
+import requests
 from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
 
-mail = Mail()  # Define Mail object globally
-
 def init_mail(app):
-    """Initialize Flask-Mailman with app configuration"""
-    app.config["MAIL_SERVER"] = "smtp.gmail.com"
-    app.config["MAIL_PORT"] = 587
-    app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME")
-    app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD")
-    app.config["MAIL_USE_TLS"] = True
-    app.config["MAIL_USE_SSL"] = False
-
-    print(f"Loaded email: {app.config['MAIL_USERNAME']}")  # Debugging
-    print(f"Loaded password: {'Yes' if app.config['MAIL_PASSWORD'] else 'No'}")  # Debugging
-
-    mail.init_app(app)  # Initialize Flask-Mailman with the app
+    """Initialize email configuration"""
+    app.config["SENDGRID_API_KEY"] = os.getenv("SENDGRID_API_KEY")
+    app.config["SENDGRID_FROM_EMAIL"] = os.getenv("SENDGRID_FROM_EMAIL")
+    print(f"Email service configured: {'Yes' if app.config['SENDGRID_API_KEY'] else 'No'}")
 
 def send_email(client_name, client_email, appointment_date, appointment_time, case_details, lawyer_name):
-    """Send an email confirmation using Flask-Mailman"""
+    """Send email using SendGrid API (HTTP version)"""
     try:
-        email_body = f"""Dear {client_name},
+        api_key = os.getenv("SENDGRID_API_KEY")
+        from_email = os.getenv("SENDGRID_FROM_EMAIL")
+        
+        if not api_key or not from_email:
+            print("Email configuration missing")
+            return False
+
+        email_data = {
+            "personalizations": [{
+                "to": [{"email": client_email}],
+                "subject": "Appointment Confirmation - LegalEagle AI"
+            }],
+            "from": {"email": from_email, "name": "LegalEagle AI"},
+            "content": [{
+                "type": "text/plain",
+                "value": f"""Dear {client_name},
 
 Your appointment has been successfully booked for {appointment_date} at {appointment_time} with {lawyer_name}.
 
@@ -32,21 +37,29 @@ Case Details:
 {case_details}
 
 Thank you for choosing our services.
-"""
 
-        msg = EmailMessage(
-            subject="Appointment Confirmation",
-            body=email_body,
-            from_email=os.getenv("MAIL_USERNAME"),
-            to=[client_email],
+Best regards,
+LegalEagle AI Team"""
+            }]
+        }
+
+        response = requests.post(
+            "https://api.sendgrid.com/v3/mail/send",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            },
+            json=email_data,
+            timeout=10  # 10 second timeout
         )
 
-        with mail.get_connection() as connection:
-            connection.send_messages([msg])  # Send the email
-
-        print("Email sent successfully!")  # Debug log
-        return True
+        if response.status_code == 202:
+            print("Email sent successfully via SendGrid!")
+            return True
+        else:
+            print(f"SendGrid error: {response.status_code} - {response.text}")
+            return False
 
     except Exception as e:
-        print(f"Failed to send email: {e}")  # Debug log
+        print(f"Failed to send email: {e}")
         return False
