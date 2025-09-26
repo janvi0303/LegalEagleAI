@@ -78,6 +78,7 @@
             align-items: center;
             gap: 0.5rem;
             transition: var(--transition);
+            z-index: 1001;
         }
 
         .logo span {
@@ -194,6 +195,40 @@
             background: rgba(212, 160, 23, 0.1);
             transform: translateY(-2px);
             box-shadow: var(--shadow-sm);
+        }
+
+        /* Mobile Navigation */
+        .menu-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 30px;
+            height: 21px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .menu-toggle span {
+            display: block;
+            height: 3px;
+            width: 100%;
+            background-color: white;
+            border-radius: 3px;
+            transition: var(--transition);
+        }
+
+        .menu-toggle.active span:nth-child(1) {
+            transform: translateY(9px) rotate(45deg);
+        }
+
+        .menu-toggle.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .menu-toggle.active span:nth-child(3) {
+            transform: translateY(-9px) rotate(-45deg);
         }
 
         /* Hero Section */
@@ -650,7 +685,66 @@
             }
             
             .nav-links {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 80%;
+                max-width: 300px;
+                height: 100vh;
+                background: rgba(26, 42, 58, 0.98);
+                backdrop-filter: blur(10px);
+                flex-direction: column;
+                justify-content: flex-start;
+                align-items: flex-start;
+                padding: 80px 2rem 2rem;
+                transition: var(--transition);
+                z-index: 1000;
+                box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+            }
+            
+            .nav-links.active {
+                right: 0;
+            }
+            
+            .nav-links a {
+                font-size: 1.1rem;
+                padding: 0.75rem 0;
+                width: 100%;
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+            }
+            
+            .dropdown {
+                width: 100%;
+            }
+            
+            .dropdown-content {
+                position: static;
+                background: transparent;
+                box-shadow: none;
                 display: none;
+                width: 100%;
+                margin-top: 0.5rem;
+                padding-left: 1rem;
+            }
+            
+            .dropdown.active .dropdown-content {
+                display: block;
+            }
+            
+            .dropdown-content a {
+                color: rgba(255,255,255,0.8);
+                padding: 0.5rem 0;
+                border-bottom: none;
+                font-size: 1rem;
+            }
+            
+            .dropdown-content a:hover {
+                background: transparent;
+                color: white;
+            }
+            
+            .menu-toggle {
+                display: flex;
             }
             
             .hero h1 {
@@ -663,6 +757,12 @@
             
             .features-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .btn-primary, .btn-secondary {
+                width: 100%;
+                justify-content: center;
+                margin: 0.5rem 0;
             }
         }
 
@@ -803,7 +903,15 @@
             <i class="fas fa-gavel logo-icon"></i>
             <span>LegalEagle</span>AI<span>.</span>
         </a>
-        <div class="nav-links">
+        
+        <!-- Hamburger Menu Button -->
+        <button class="menu-toggle" id="menu-toggle">
+            <span></span>
+            <span></span>
+            <span></span>
+        </button>
+        
+        <div class="nav-links" id="nav-links">
             <a href="{{ url_for('index') }}">Home</a>
             <a href="{{ url_for('admin_dashboard') }}" target="_blank">Admin</a>
             <a href="#features">About us</a>
@@ -1077,6 +1185,44 @@
                 navbar.classList.remove('hidden');
             }
             lastScroll = currentScroll;
+        });
+
+        // Mobile menu functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuToggle = document.getElementById('menu-toggle');
+            const navLinks = document.getElementById('nav-links');
+            const dropdowns = document.querySelectorAll('.dropdown');
+            
+            // Toggle mobile menu
+            menuToggle.addEventListener('click', function() {
+                this.classList.toggle('active');
+                navLinks.classList.toggle('active');
+            });
+            
+            // Handle dropdowns on mobile
+            dropdowns.forEach(dropdown => {
+                const button = dropdown.querySelector('button');
+                
+                button.addEventListener('click', function(e) {
+                    if (window.innerWidth <= 768) {
+                        e.preventDefault();
+                        dropdown.classList.toggle('active');
+                    }
+                });
+            });
+            
+            // Close mobile menu when clicking on a link
+            navLinks.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A' && window.innerWidth <= 768) {
+                    menuToggle.classList.remove('active');
+                    navLinks.classList.remove('active');
+                    
+                    // Close any open dropdowns
+                    dropdowns.forEach(dropdown => {
+                        dropdown.classList.remove('active');
+                    });
+                }
+            });
         });
 
         // Chatbot functionality (preserved from original)
