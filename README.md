@@ -31,8 +31,8 @@
 - **Admin Page**
   - Username: `admin`
   - Password: `admin123`
-- **Clients:** Password: `*Cli123`
-- **Lawyers:** Password: `*Law1234`
+- **Clients:** Password: `*Cli123` or `123456`
+- **Lawyers:** Password: `*Law1234` or `123456`
 
 > **IMPORTANT:**  
 > When booking appointments, always use the same name and email as your logged-in client profile.
@@ -88,3 +88,4 @@ Pull requests and suggestions are welcome! Please open an issue to discuss your 
 ---
 
 Happy Lawyering with LegalEagle AI! 🦅⚖️
+
