@@ -66,6 +66,47 @@
 
 ---
 
+## 🔧 Firebase & API Configuration
+
+Copy the following variables into your `.env` file and update with your actual credentials:
+
+```
+# Firebase Configuration
+FIREBASE_API_KEY=your_firebase_api_key
+FIREBASE_AUTH_DOMAIN=your_project_auth_domain
+FIREBASE_PROJECT_ID=your_project_id
+FIREBASE_STORAGE_BUCKET=your_storage_bucket
+FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
+FIREBASE_APP_ID=your_app_id
+FIREBASE_DB_URL=your_database_url
+
+# Google API Key
+GOOGLE_API_KEY=your_google_api_key
+
+# Cohere API Key
+COHERE_API_KEY=your_cohere_api_key
+
+# SendGrid Email Service
+SENDGRID_API_KEY=your_sendgrid_api_key
+SENDGRID_FROM_EMAIL=your_email@example.com
+
+# SMTP Credentials
+MAIL_USERNAME=your_email@example.com
+MAIL_PASSWORD=your_email_password
+
+# Firebase Admin SDK
+FIREBASE_TYPE=service_account
+FIREBASE_PRIVATE_KEY="your_firebase_private_key"
+FIREBASE_CLIENT_EMAIL=your_firebase_client_email
+FIREBASE_CLIENT_ID=your_firebase_client_id
+FIREBASE_AUTH_URI=https://accounts.google.com/o/oauth2/auth
+FIREBASE_TOKEN_URI=https://oauth2.googleapis.com/token
+FIREBASE_AUTH_PROVIDER_CERT_URL=https://www.googleapis.com/oauth2/v1/certs
+FIREBASE_CLIENT_CERT_URL=your_firebase_client_cert_url
+```
+
+---
+
 ## 🌐 Live Demo
 
 - [LegalEagleAI on Render](https://legaleagleai-ut6e.onrender.com)
